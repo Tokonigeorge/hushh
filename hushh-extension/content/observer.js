@@ -52,8 +52,8 @@ function startObserver() {
     attributeFilter: ['value', 'placeholder', 'title', 'aria-label'],
   });
 
-  // Passive scroll/resize listeners to reposition overlays without blocking
-  window.addEventListener('scroll', repositionOverlays, { passive: true });
+  // capture:true catches scroll on any child container (SPAs with custom scroll divs)
+  document.addEventListener('scroll', repositionOverlays, { passive: true, capture: true });
   window.addEventListener('resize', repositionOverlays, { passive: true });
 }
 
@@ -67,7 +67,7 @@ function stopObserver() {
     rafId = null;
   }
   dirtyNodes.clear();
-  window.removeEventListener('scroll', repositionOverlays);
+  document.removeEventListener('scroll', repositionOverlays, { capture: true });
   window.removeEventListener('resize', repositionOverlays);
 }
 

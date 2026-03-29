@@ -2,10 +2,16 @@
 // Overlays are pre-allocated divs attached to documentElement.
 // Movement uses only CSS transform (translate) — no layout, no paint.
 // backdrop-filter: blur() renders into OS screen captures natively.
+//
+// Two positioning modes:
+//   - Text node match: use a DOM Range to get exact word bounds (precise)
+//   - Input/element match: use the element's bounding rect (whole field)
 
 const POOL_SIZE = 20;
 const pool = [];
-// activeOverlays: key (secretId+nodeKey) → { el, targetEl, secretId, nodeKey }
+// activeOverlays: mapKey → { el, secretId, nodeKey, source }
+// source is either { type: 'range', textNode, start, length }
+//               or { type: 'element', el: targetEl }
 const activeOverlays = new Map();
 
 let poolInitialized = false;
@@ -21,8 +27,9 @@ function initPool() {
 function createOverlayEl() {
   const el = document.createElement('div');
   el.setAttribute('data-hushh-overlay', '');
+  // position: fixed — viewport-relative, works with SPA custom scroll containers
   el.style.cssText = `
-    position: absolute;
+    position: fixed;
     pointer-events: none;
     z-index: 2147483647;
     backdrop-filter: blur(8px);
@@ -40,46 +47,87 @@ function createOverlayEl() {
 }
 
 /**
- * Show or update an overlay for a given secret+node pair.
- * @param {string} secretId
- * @param {Node} targetNode - the DOM node containing the secret text
- * @param {Element} targetEl - the nearest positioned element to use for rect
+ * Show an overlay for a TEXT NODE match — blurs only the matched word(s),
+ * not the whole parent element.
+ *
+ * @param {string}  secretId
+ * @param {Text}    textNode   - the text node containing the match
+ * @param {number}  matchStart - char index in textNode.textContent where match begins
+ * @param {number}  matchLen   - length of the matched string
  */
-function showOverlay(secretId, targetNode, targetEl) {
+function showTextOverlay(secretId, textNode, matchStart, matchLen) {
   initPool();
-
-  const nodeKey = getNodeKey(targetNode);
-  const mapKey = `${secretId}::${nodeKey}`;
+  const nodeKey = getNodeKey(textNode) + `::${matchStart}`;
+  const mapKey  = `${secretId}::${nodeKey}`;
 
   let entry = activeOverlays.get(mapKey);
   if (!entry) {
     const overlayEl = pool.pop() ?? createOverlayEl();
-    entry = { el: overlayEl, targetEl, secretId, nodeKey, mapKey };
+    entry = { el: overlayEl, secretId, nodeKey, mapKey,
+              source: { type: 'range', textNode, start: matchStart, length: matchLen } };
     activeOverlays.set(mapKey, entry);
-  } else {
-    // Update target in case it moved
-    entry.targetEl = targetEl;
   }
 
-  positionOverlay(entry.el, targetEl);
+  positionFromSource(entry.el, entry.source);
 }
 
-function positionOverlay(overlayEl, targetEl) {
-  const rect = targetEl.getBoundingClientRect();
+/**
+ * Show an overlay for an INPUT or TEXTAREA — blurs the whole element.
+ */
+function showElementOverlay(secretId, targetEl) {
+  initPool();
+  const nodeKey = getElKey(targetEl);
+  const mapKey  = `${secretId}::${nodeKey}`;
 
-  // Skip invisible elements
+  let entry = activeOverlays.get(mapKey);
+  if (!entry) {
+    const overlayEl = pool.pop() ?? createOverlayEl();
+    entry = { el: overlayEl, secretId, nodeKey, mapKey,
+              source: { type: 'element', el: targetEl } };
+    activeOverlays.set(mapKey, entry);
+  }
+
+  positionFromSource(entry.el, entry.source);
+}
+
+function positionFromSource(overlayEl, source) {
+  let rect;
+
+  if (source.type === 'range') {
+    // Check text node is still in the document
+    if (!source.textNode.parentElement ||
+        !document.documentElement.contains(source.textNode.parentElement)) {
+      overlayEl.style.display = 'none';
+      return;
+    }
+    // Clamp indices to actual text length (text may have changed)
+    const textLen = source.textNode.textContent.length;
+    const start   = Math.min(source.start, textLen);
+    const end     = Math.min(source.start + source.length, textLen);
+    if (start >= end) { overlayEl.style.display = 'none'; return; }
+
+    const range = document.createRange();
+    range.setStart(source.textNode, start);
+    range.setEnd(source.textNode, end);
+    rect = range.getBoundingClientRect();
+  } else {
+    if (!document.documentElement.contains(source.el)) {
+      overlayEl.style.display = 'none';
+      return;
+    }
+    rect = source.el.getBoundingClientRect();
+  }
+
   if (rect.width === 0 && rect.height === 0) {
     overlayEl.style.display = 'none';
     return;
   }
 
-  const scrollX = window.scrollX;
-  const scrollY = window.scrollY;
-
-  overlayEl.style.transform = `translate(${rect.left + scrollX}px, ${rect.top + scrollY}px)`;
-  overlayEl.style.width = rect.width + 'px';
-  overlayEl.style.height = rect.height + 'px';
-  overlayEl.style.display = 'block';
+  // position:fixed — rect is already in viewport coordinates
+  overlayEl.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
+  overlayEl.style.width     = rect.width  + 'px';
+  overlayEl.style.height    = rect.height + 'px';
+  overlayEl.style.display   = 'block';
 }
 
 /**
@@ -87,17 +135,12 @@ function positionOverlay(overlayEl, targetEl) {
  */
 function repositionOverlays() {
   for (const entry of activeOverlays.values()) {
-    if (!document.documentElement.contains(entry.targetEl)) {
-      hideOverlay(entry.mapKey);
-      continue;
-    }
-    positionOverlay(entry.el, entry.targetEl);
+    positionFromSource(entry.el, entry.source);
   }
 }
 
 /**
- * Remove all overlays associated with a secretId. Returns the overlay els
- * to the pool.
+ * Remove all overlays for a secretId.
  */
 function removeOverlaysForSecret(secretId) {
   for (const [key, entry] of activeOverlays) {
@@ -108,9 +151,6 @@ function removeOverlaysForSecret(secretId) {
   }
 }
 
-/**
- * Remove a single overlay by mapKey.
- */
 function hideOverlay(mapKey) {
   const entry = activeOverlays.get(mapKey);
   if (!entry) return;
@@ -123,9 +163,6 @@ function returnToPool(el) {
   pool.push(el);
 }
 
-/**
- * Remove all overlays and reset state.
- */
 function clearAllOverlays() {
   for (const entry of activeOverlays.values()) {
     returnToPool(entry.el);
@@ -133,11 +170,7 @@ function clearAllOverlays() {
   activeOverlays.clear();
 }
 
-/**
- * Produce a stable key for a DOM node.
- */
 function getNodeKey(node) {
-  // For text nodes, use parent + child index
   if (node.nodeType === Node.TEXT_NODE) {
     const parent = node.parentElement;
     if (!parent) return String(Math.random());
@@ -156,7 +189,8 @@ function getElKey(el) {
 
 export {
   initPool,
-  showOverlay,
+  showTextOverlay,
+  showElementOverlay,
   repositionOverlays,
   removeOverlaysForSecret,
   clearAllOverlays,
