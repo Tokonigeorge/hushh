@@ -705,7 +705,7 @@ section {
   border-radius: 4px;
   margin: 0 5px;
   cursor: default;
-  transition: background 0.2s, color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 .qb-nav-active {

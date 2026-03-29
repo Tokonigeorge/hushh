@@ -161,7 +161,7 @@ body {
   line-height: 1;
   padding: 2px 4px;
   border-radius: 4px;
-  transition: color 0.1s, background 0.1s;
+  transition: color 0.1s, background-color 0.1s;
   flex-shrink: 0;
 }
 .secret-remove:hover { color: #d94f4f; background: rgba(217,79,79,0.08); }
@@ -203,7 +203,7 @@ kbd {
   cursor: pointer;
   padding: 3px 8px;
   border-radius: 6px;
-  transition: color 0.1s, background 0.1s;
+  transition: color 0.1s, background-color 0.1s;
   display: none;
   white-space: nowrap;
   flex-shrink: 0;
