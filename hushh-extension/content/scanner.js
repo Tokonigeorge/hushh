@@ -25,15 +25,15 @@ function scanTextNode(node) {
     while (true) {
       const idx = lower.indexOf(secret.matchValue, from);
       if (idx === -1) break;
-      matches.push({ idx, len: secret.matchValue.length, secretId: secret.id });
+      matches.push({ idx, len: secret.matchValue.length, secretId: secret.id, style: secret.style ?? 'blur' });
       from = idx + secret.matchValue.length;
     }
   }
 
   // Inject from end to start so offsets stay valid
   matches.sort((a, b) => b.idx - a.idx);
-  for (const { idx, len, secretId } of matches) {
-    injectTextBlur(node, idx, len, secretId);
+  for (const { idx, len, secretId, style } of matches) {
+    injectTextBlur(node, idx, len, secretId, style);
   }
 }
 

@@ -6,6 +6,10 @@ import { scanFullDocument } from './scanner.js';
 import { startObserver } from './observer.js';
 
 let selectionActive = false;
+let currentOverlayStyle = 'blur';
+
+function setOverlayStyle(style) { currentOverlayStyle = style; }
+function getOverlayStyle()       { return currentOverlayStyle; }
 let hoveredEl = null;
 let isDragging = false;
 let dragStartX = 0;
@@ -154,14 +158,14 @@ function onClick(e) {
   if (textNode) {
     const raw = textNode.textContent?.trim() ?? '';
     if (raw.length >= 3) {
-      id = addRawSecret(raw, 'text');
+      id = addRawSecret(raw, 'text', currentOverlayStyle);
     }
   }
 
   // Fallback: use the hovered element's full value
   if (!id) {
     const target = findMeaningfulElement(e.target) ?? e.target;
-    id = addSecret(target);
+    id = addSecret(target, false, currentOverlayStyle);
     if (id && hoveredEl) flashConfirm(hoveredEl);
   }
 
@@ -276,7 +280,7 @@ function onMouseUp(e) {
 
   const merged = [...new Set(intersecting)].join(' ');
   if (merged.length >= 3) {
-    const id = addRawSecret(merged, 'region');
+    const id = addRawSecret(merged, 'region', currentOverlayStyle);
     if (id) {
       startObserver();
       scanFullDocument();
@@ -382,4 +386,4 @@ function isHushhElement(el) {
   return el.hasAttribute('data-hushh-overlay') || el.hasAttribute('data-hushh-ui');
 }
 
-export { init, enterSelectionMode, exitSelectionMode, isSelectionActive };
+export { init, enterSelectionMode, exitSelectionMode, isSelectionActive, setOverlayStyle, getOverlayStyle };

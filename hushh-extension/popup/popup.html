@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hushh</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <!-- Header -->
+
   <header class="header">
     <div class="logo">
       <div class="logo-mark">H</div>
@@ -16,9 +15,43 @@
     <span class="count-badge" id="countBadge">0</span>
   </header>
 
-  <!-- Main content -->
+  <!-- Style picker -->
+  <div class="style-picker-wrap">
+    <div class="style-picker-label">Overlay style</div>
+    <div class="style-picker" id="stylePicker">
+
+      <button class="style-option active" data-style="blur" title="Frosted blur">
+        <div class="style-preview blur-preview">abc</div>
+        <span class="style-name">Blur</span>
+      </button>
+
+      <button class="style-option" data-style="seal" title="Seal sticker">
+        <div class="style-preview">
+          <img src="../assets/seal.svg" alt="seal" />
+        </div>
+        <span class="style-name">Seal</span>
+      </button>
+
+      <button class="style-option" data-style="barcode" title="Barcode sticker">
+        <div class="style-preview">
+          <img src="../assets/barcode.svg" alt="barcode" />
+        </div>
+        <span class="style-name">Barcode</span>
+      </button>
+
+      <button class="style-option" data-style="starburst" title="Starburst sticker">
+        <div class="style-preview">
+          <img src="../assets/starburst.svg" alt="starburst" />
+        </div>
+        <span class="style-name">Starburst</span>
+      </button>
+
+    </div>
+  </div>
+
   <main class="content">
-    <!-- State: needs reload (extension installed after tab opened) -->
+
+    <!-- Needs reload -->
     <div class="state" id="stateReload">
       <div class="state-icon">🔄</div>
       <div class="state-title">Reload this tab</div>
@@ -26,7 +59,7 @@
       <button class="btn-activate" id="btnReload">Reload tab</button>
     </div>
 
-    <!-- State: inactive (ready to activate) -->
+    <!-- Inactive / restricted page -->
     <div class="state" id="stateInactive">
       <div class="state-icon">🤫</div>
       <div class="state-title">Hushh is off</div>
@@ -34,23 +67,18 @@
       <button class="btn-activate" id="btnActivate">Start protecting</button>
     </div>
 
-    <!-- State: active, no secrets yet -->
+    <!-- Active, no secrets yet -->
     <div class="state" id="stateEmpty">
       <div class="state-icon">👆</div>
       <div class="state-title">Click anything to protect it</div>
-      <div class="state-body">
-        Hover over a password, API key, or any sensitive text on the page, then click to hide it.
-        Or draw a rectangle to capture a region.
-      </div>
+      <div class="state-body">Hover over sensitive text and click to hide it. Shift+drag to draw a region.</div>
     </div>
 
-    <!-- State: secrets exist -->
-    <ul class="secrets-list" id="secretsList" role="list" aria-label="Active secrets">
-      <!-- Populated by popup.js -->
-    </ul>
+    <!-- Secrets exist -->
+    <ul class="secrets-list" id="secretsList" role="list" aria-label="Active secrets"></ul>
+
   </main>
 
-  <!-- Footer -->
   <footer class="footer">
     <span class="footer-hint" id="shortcutHint"></span>
     <button class="btn-clear-all" id="btnClearAll">Clear all</button>

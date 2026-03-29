@@ -1,4 +1,4 @@
-// popup.js — Popup UI logic
+// popup.js
 
 const stateReload   = document.getElementById('stateReload');
 const stateInactive = document.getElementById('stateInactive');
@@ -9,36 +9,66 @@ const btnActivate   = document.getElementById('btnActivate');
 const btnReload     = document.getElementById('btnReload');
 const btnClearAll   = document.getElementById('btnClearAll');
 const shortcutHint  = document.getElementById('shortcutHint');
+const stylePicker   = document.getElementById('stylePicker');
 
 const isMac = navigator.platform.toUpperCase().includes('MAC');
 const mod   = isMac ? 'Option' : 'Alt';
 
-let currentTabId = null;
+let currentTabId    = null;
+let currentStyle    = 'blur';
+
+const STICKER_ASSET = {
+  seal:      '../assets/seal.svg',
+  barcode:   '../assets/barcode.svg',
+  starburst: '../assets/starburst.svg',
+};
+
+// ─── Style picker ──────────────────────────────────────────────────────────
+
+async function initStylePicker() {
+  const { overlayStyle } = await chrome.storage.local.get('overlayStyle');
+  setActiveStyle(overlayStyle ?? 'blur', false);
+}
+
+function setActiveStyle(style, persist = true) {
+  currentStyle = style;
+  stylePicker.querySelectorAll('.style-option').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.style === style);
+  });
+  if (persist) {
+    chrome.storage.local.set({ overlayStyle: style });
+    if (currentTabId) {
+      chrome.tabs.sendMessage(currentTabId, { type: 'SET_STYLE', style }).catch(() => {});
+    }
+  }
+}
+
+stylePicker.addEventListener('click', e => {
+  const btn = e.target.closest('.style-option');
+  if (!btn) return;
+  setActiveStyle(btn.dataset.style);
+});
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 
 async function init() {
-  // Set correct modifier key label
   shortcutHint.innerHTML =
-    `Toggle: <kbd>${mod}</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>` +
-    `&nbsp;&nbsp;Clear: <kbd>${mod}</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>`;
+    `<kbd>${mod}</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> toggle`;
+
+  await initStylePicker();
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id) {
-    showState('needs-reload');
-    return;
-  }
+  if (!tab?.id) { showState('needs-reload'); return; }
   currentTabId = tab.id;
 
   try {
     const res = await sendToContent({ type: 'GET_SECRETS' });
     renderSecrets(res.secrets ?? []);
   } catch {
-    // Content script didn't respond — either needs reload or restricted page
-    const isRestricted = tab.url?.startsWith('chrome://') ||
-                         tab.url?.startsWith('chrome-extension://') ||
-                         tab.url?.startsWith('https://chrome.google.com/webstore');
-    showState(isRestricted ? 'inactive' : 'needs-reload');
+    const restricted = tab.url?.startsWith('chrome://') ||
+                       tab.url?.startsWith('chrome-extension://') ||
+                       tab.url?.startsWith('https://chrome.google.com/webstore');
+    showState(restricted ? 'inactive' : 'needs-reload');
   }
 }
 
@@ -46,43 +76,46 @@ async function init() {
 
 function renderSecrets(secrets) {
   secretsList.innerHTML = '';
-
-  if (secrets.length === 0) {
-    showState('empty');
-    return;
-  }
+  if (secrets.length === 0) { showState('empty'); return; }
 
   showState('list');
   countBadge.textContent = secrets.length;
   countBadge.classList.add('visible');
   btnClearAll.classList.add('visible');
 
-  for (const secret of secrets) {
-    secretsList.appendChild(buildSecretItem(secret));
-  }
+  for (const s of secrets) secretsList.appendChild(buildSecretItem(s));
 }
 
 function buildSecretItem(secret) {
   const li = document.createElement('li');
   li.className = 'secret-item';
-  li.dataset.id = secret.id;
 
   const dot = document.createElement('span');
   dot.className = `secret-dot ${secret.type ?? 'text'}`;
 
+  // Style indicator
+  const styleIcon = document.createElement('span');
+  if (secret.style && secret.style !== 'blur') {
+    styleIcon.className = 'secret-style-icon';
+    const img = document.createElement('img');
+    img.src = STICKER_ASSET[secret.style] ?? '';
+    img.alt = secret.style;
+    styleIcon.appendChild(img);
+  } else {
+    styleIcon.className = 'secret-style-blur';
+  }
+
   const preview = document.createElement('span');
   preview.className = 'secret-preview';
   preview.textContent = secret.preview;
-  preview.setAttribute('aria-label', 'hidden secret value');
 
   const remove = document.createElement('button');
   remove.className = 'secret-remove';
   remove.textContent = '×';
-  remove.title = 'Remove this secret';
-  remove.setAttribute('aria-label', 'Remove secret');
+  remove.title = 'Remove';
   remove.addEventListener('click', () => handleRemove(secret.id));
 
-  li.append(dot, preview, remove);
+  li.append(dot, styleIcon, preview, remove);
   return li;
 }
 
@@ -129,8 +162,6 @@ btnClearAll.addEventListener('click', async () => {
   renderSecrets([]);
 });
 
-// ─── Live updates from content script ────────────────────────────────────
-
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'SECRETS_UPDATED') {
     sendToContent({ type: 'GET_SECRETS' })
@@ -138,8 +169,6 @@ chrome.runtime.onMessage.addListener((msg) => {
       .catch(() => {});
   }
 });
-
-// ─── Helpers ──────────────────────────────────────────────────────────────
 
 function sendToContent(msg) {
   return chrome.tabs.sendMessage(currentTabId, msg);

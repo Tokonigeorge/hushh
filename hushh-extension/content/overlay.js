@@ -14,15 +14,20 @@
 // secretId → Set of injected spans
 const spansForSecret = new Map();
 
+const STICKER_NAMES = ['seal', 'barcode', 'starburst'];
+
+function getStickerUrl(style) {
+  return chrome.runtime.getURL(`assets/${style}.svg`);
+}
+
 /**
- * Wrap the matched substring in a text node with a blur span.
- * Range.surroundContents() handles the DOM split cleanly.
+ * Wrap the matched substring in a span with either blur or a sticker overlay.
+ * style: 'blur' | 'seal' | 'barcode' | 'starburst'
  */
-function injectTextBlur(textNode, matchStart, matchLen, secretId) {
-  // Don't double-inject
+function injectTextBlur(textNode, matchStart, matchLen, secretId, style = 'blur') {
   const parent = textNode.parentElement;
   if (!parent) return;
-  if (parent.hasAttribute('data-hushh-blur')) return;
+  if (parent.hasAttribute('data-hushh-blur'))    return;
   if (parent.hasAttribute('data-hushh-overlay')) return;
 
   const textLen = textNode.textContent.length;
@@ -36,20 +41,36 @@ function injectTextBlur(textNode, matchStart, matchLen, secretId) {
 
   const span = document.createElement('span');
   span.setAttribute('data-hushh-blur', secretId);
-  // display: inline-block is required for filter to apply to inline text
-  span.style.cssText = `
-    filter: blur(6px);
-    -webkit-filter: blur(6px);
-    border-radius: 3px;
-    display: inline-block;
-    user-select: none;
-    pointer-events: none;
-  `;
+
+  if (STICKER_NAMES.includes(style)) {
+    const url = getStickerUrl(style);
+    span.style.cssText = `
+      display: inline-block;
+      background-image: url('${url}');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      color: transparent;
+      border-radius: 3px;
+      min-width: 1.2em;
+      pointer-events: none;
+      user-select: none;
+    `;
+  } else {
+    // blur (default)
+    span.style.cssText = `
+      filter: blur(6px);
+      -webkit-filter: blur(6px);
+      border-radius: 3px;
+      display: inline-block;
+      user-select: none;
+      pointer-events: none;
+    `;
+  }
 
   try {
     range.surroundContents(span);
   } catch {
-    // Fails if the range partially overlaps an element boundary — skip
     return;
   }
 

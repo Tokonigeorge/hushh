@@ -43,16 +43,16 @@ function normalize(raw) {
  * Add a secret extracted from a single element.
  * Returns the secret id, or null if the value is below minimum length.
  */
-function addSecret(el, isRegion = false) {
+function addSecret(el, isRegion = false, style = 'blur') {
   const raw = extractValue(el);
-  return addRawSecret(raw, detectType(el, isRegion));
+  return addRawSecret(raw, detectType(el, isRegion), style);
 }
 
 /**
  * Add a secret from a raw string value (e.g. merged region text).
  * Returns the secret id, or null if rejected.
  */
-function addRawSecret(raw, type = 'text') {
+function addRawSecret(raw, type = 'text', style = 'blur') {
   const trimmed = raw.trim().replace(/\s+/g, ' ');
 
   // Minimum 3 chars, max 500 chars
@@ -77,6 +77,7 @@ function addRawSecret(raw, type = 'text') {
     normalized,
     matchValue,
     type,
+    style,
     overlayIds: [],
   });
 
