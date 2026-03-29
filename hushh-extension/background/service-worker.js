@@ -2,22 +2,27 @@
 
 // Handle keyboard shortcut (Alt+Shift+H)
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command !== 'toggle-hushh') return;
-
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) return;
 
-  try {
-    await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_SELECTION' });
-  } catch (e) {
-    // Content script not yet injected — inject it
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ['content/index.js'],
-    });
-    // Retry after injection
+  if (command === 'toggle-hushh') {
     try {
       await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_SELECTION' });
+    } catch {
+      // Content script not yet injected — inject then retry
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['dist/content/index.js'],
+        });
+        await chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_SELECTION' });
+      } catch {}
+    }
+  }
+
+  if (command === 'clear-hushh') {
+    try {
+      await chrome.tabs.sendMessage(tab.id, { type: 'CLEAR_ALL' });
     } catch {}
   }
 });

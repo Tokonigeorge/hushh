@@ -32,6 +32,10 @@
     "toggle-hushh": {
       "suggested_key": { "default": "Alt+Shift+H" },
       "description": "Toggle Hushh selection mode"
+    },
+    "clear-hushh": {
+      "suggested_key": { "default": "Alt+Shift+X" },
+      "description": "Clear all Hushh secrets"
     }
   }
 }

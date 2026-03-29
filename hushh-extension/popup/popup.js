@@ -1,22 +1,31 @@
 // popup.js — Popup UI logic
-// Communicates with the content script via chrome.runtime.sendMessage.
-// No secret values are ever shown in full — only masked previews.
 
+const stateReload   = document.getElementById('stateReload');
 const stateInactive = document.getElementById('stateInactive');
 const stateEmpty    = document.getElementById('stateEmpty');
 const secretsList   = document.getElementById('secretsList');
 const countBadge    = document.getElementById('countBadge');
 const btnActivate   = document.getElementById('btnActivate');
+const btnReload     = document.getElementById('btnReload');
 const btnClearAll   = document.getElementById('btnClearAll');
+const shortcutHint  = document.getElementById('shortcutHint');
+
+const isMac = navigator.platform.toUpperCase().includes('MAC');
+const mod   = isMac ? 'Option' : 'Alt';
 
 let currentTabId = null;
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 
 async function init() {
+  // Set correct modifier key label
+  shortcutHint.innerHTML =
+    `Toggle: <kbd>${mod}</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>` +
+    `&nbsp;&nbsp;Clear: <kbd>${mod}</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>`;
+
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) {
-    showState('inactive');
+    showState('needs-reload');
     return;
   }
   currentTabId = tab.id;
@@ -25,8 +34,11 @@ async function init() {
     const res = await sendToContent({ type: 'GET_SECRETS' });
     renderSecrets(res.secrets ?? []);
   } catch {
-    // Content script not injected yet
-    showState('inactive');
+    // Content script didn't respond — either needs reload or restricted page
+    const isRestricted = tab.url?.startsWith('chrome://') ||
+                         tab.url?.startsWith('chrome-extension://') ||
+                         tab.url?.startsWith('https://chrome.google.com/webstore');
+    showState(isRestricted ? 'inactive' : 'needs-reload');
   }
 }
 
@@ -42,8 +54,8 @@ function renderSecrets(secrets) {
 
   showState('list');
   countBadge.textContent = secrets.length;
-  countBadge.classList.toggle('visible', secrets.length > 0);
-  btnClearAll.classList.toggle('visible', secrets.length > 0);
+  countBadge.classList.add('visible');
+  btnClearAll.classList.add('visible');
 
   for (const secret of secrets) {
     secretsList.appendChild(buildSecretItem(secret));
@@ -75,40 +87,34 @@ function buildSecretItem(secret) {
 }
 
 function showState(state) {
+  stateReload.classList.remove('visible');
   stateInactive.classList.remove('visible');
   stateEmpty.classList.remove('visible');
   secretsList.classList.remove('visible');
   countBadge.classList.remove('visible');
   btnClearAll.classList.remove('visible');
 
-  if (state === 'inactive') {
-    stateInactive.classList.add('visible');
-  } else if (state === 'empty') {
-    stateEmpty.classList.add('visible');
-  } else if (state === 'list') {
-    secretsList.classList.add('visible');
-  }
+  if      (state === 'needs-reload') stateReload.classList.add('visible');
+  else if (state === 'inactive')     stateInactive.classList.add('visible');
+  else if (state === 'empty')        stateEmpty.classList.add('visible');
+  else if (state === 'list')         secretsList.classList.add('visible');
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────
 
 btnActivate.addEventListener('click', async () => {
   if (!currentTabId) return;
-
-  try {
-    // Inject content script if needed
-    await chrome.scripting.executeScript({
-      target: { tabId: currentTabId },
-      files: ['content/index.js'],
-    });
-  } catch {}
-
   try {
     await sendToContent({ type: 'TOGGLE_SELECTION' });
-    showState('empty');
+    window.close();
   } catch {
-    showState('inactive');
+    showState('needs-reload');
   }
+});
+
+btnReload.addEventListener('click', async () => {
+  if (!currentTabId) return;
+  await chrome.tabs.reload(currentTabId);
   window.close();
 });
 
@@ -138,7 +144,5 @@ chrome.runtime.onMessage.addListener((msg) => {
 function sendToContent(msg) {
   return chrome.tabs.sendMessage(currentTabId, msg);
 }
-
-// ─── Boot ─────────────────────────────────────────────────────────────────
 
 init();

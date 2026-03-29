@@ -18,7 +18,15 @@
 
   <!-- Main content -->
   <main class="content">
-    <!-- State: inactive (no active tab or can't inject) -->
+    <!-- State: needs reload (extension installed after tab opened) -->
+    <div class="state" id="stateReload">
+      <div class="state-icon">🔄</div>
+      <div class="state-title">Reload this tab</div>
+      <div class="state-body">Hushh was just installed. Reload the page to activate it.</div>
+      <button class="btn-activate" id="btnReload">Reload tab</button>
+    </div>
+
+    <!-- State: inactive (ready to activate) -->
     <div class="state" id="stateInactive">
       <div class="state-icon">🤫</div>
       <div class="state-title">Hushh is off</div>
@@ -44,9 +52,7 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <span class="footer-hint">
-      Toggle: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>
-    </span>
+    <span class="footer-hint" id="shortcutHint"></span>
     <button class="btn-clear-all" id="btnClearAll">Clear all</button>
   </footer>
 

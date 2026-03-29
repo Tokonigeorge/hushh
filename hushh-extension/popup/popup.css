@@ -206,6 +206,7 @@ body {
 .footer-hint {
   color: var(--muted);
   font-size: 11px;
+  line-height: 1.6;
 }
 
 kbd {

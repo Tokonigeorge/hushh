@@ -294,7 +294,8 @@ function showBanner() {
     text-align: center;
     pointer-events: none;
   `;
-  banner.textContent = 'Hushh active — click or draw to protect  ·  Esc to cancel';
+  const mod = isMac() ? 'Option' : 'Alt';
+  banner.textContent = `Hushh active — click or draw to protect  ·  Esc to cancel  ·  ${mod}+Shift+X to clear all`;
   document.documentElement.appendChild(banner);
 }
 
@@ -325,6 +326,10 @@ function findMeaningfulElement(el) {
     current = current.parentElement;
   }
   return el?.tagName !== 'BODY' && el?.tagName !== 'HTML' ? el : null;
+}
+
+function isMac() {
+  return navigator.platform.toUpperCase().includes('MAC');
 }
 
 function isHushhElement(el) {
