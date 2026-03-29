@@ -1,30 +1,15 @@
 // overlay.js — Overlay renderer
 //
-// TEXT nodes: inject a <span data-hushh-blur> wrapping the matched text.
-//   filter: blur() on the span moves with the text — zero scroll lag.
+// TEXT nodes: inject a <span data-hushh-blur> with filter:blur() around the
+//   matched text. Moves with content — zero scroll lag.
 //
-// INPUT / TEXTAREA: use a pool of position:fixed overlay divs (can't inject
-//   into input values).
-//
-// backdrop-filter and filter: blur() both render into the OS compositor,
-// so both appear in screen recordings and screenshots.
+// INPUT / TEXTAREA: position:fixed overlay div (can't inject into input values).
 
 // ─── Span injection (text nodes) ──────────────────────────────────────────
 
-// secretId → Set of injected spans
-const spansForSecret = new Map();
+const spansForSecret = new Map(); // secretId → Set<span>
 
-const STICKER_NAMES = ['seal', 'barcode', 'starburst'];
-
-function getStickerUrl(style) {
-  return chrome.runtime.getURL(`assets/${style}.svg`);
-}
-
-/**
- * Wrap the matched substring in a span with either blur or a sticker overlay.
- * style: 'blur' | 'seal' | 'barcode' | 'starburst'
- */
-function injectTextBlur(textNode, matchStart, matchLen, secretId, style = 'blur') {
+function injectTextBlur(textNode, matchStart, matchLen, secretId) {
   const parent = textNode.parentElement;
   if (!parent) return;
   if (parent.hasAttribute('data-hushh-blur'))    return;
@@ -41,32 +26,14 @@ function injectTextBlur(textNode, matchStart, matchLen, secretId, style = 'blur'
 
   const span = document.createElement('span');
   span.setAttribute('data-hushh-blur', secretId);
-
-  if (STICKER_NAMES.includes(style)) {
-    const url = getStickerUrl(style);
-    span.style.cssText = `
-      display: inline-block;
-      background-image: url('${url}');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      color: transparent;
-      border-radius: 3px;
-      min-width: 1.2em;
-      pointer-events: none;
-      user-select: none;
-    `;
-  } else {
-    // blur (default)
-    span.style.cssText = `
-      filter: blur(6px);
-      -webkit-filter: blur(6px);
-      border-radius: 3px;
-      display: inline-block;
-      user-select: none;
-      pointer-events: none;
-    `;
-  }
+  span.style.cssText = `
+    filter: blur(6px);
+    -webkit-filter: blur(6px);
+    border-radius: 3px;
+    display: inline-block;
+    user-select: none;
+    pointer-events: none;
+  `;
 
   try {
     range.surroundContents(span);
@@ -78,32 +45,24 @@ function injectTextBlur(textNode, matchStart, matchLen, secretId, style = 'blur'
   spansForSecret.get(secretId).add(span);
 }
 
-/**
- * Remove all blur spans for a secret. Replaces each span with its text.
- */
 function removeTextBlursForSecret(secretId) {
   const spans = spansForSecret.get(secretId);
   if (!spans) return;
   for (const span of spans) {
-    if (span.parentNode) {
-      span.replaceWith(...span.childNodes);
-    }
+    if (span.parentNode) span.replaceWith(...span.childNodes);
   }
   spansForSecret.delete(secretId);
 }
 
 function clearAllTextBlurs() {
-  for (const secretId of spansForSecret.keys()) {
-    removeTextBlursForSecret(secretId);
-  }
+  for (const id of spansForSecret.keys()) removeTextBlursForSecret(id);
 }
 
 // ─── Pool overlays (inputs / textareas) ───────────────────────────────────
 
 const POOL_SIZE = 20;
 const pool = [];
-const activeOverlays = new Map(); // mapKey → { el, secretId, source: { type:'element', el } }
-
+const activeOverlays = new Map();
 let poolInitialized = false;
 
 function initPool() {
@@ -138,7 +97,7 @@ function showElementOverlay(secretId, targetEl) {
   let entry = activeOverlays.get(key);
   if (!entry) {
     const overlayEl = pool.pop() ?? createOverlayEl();
-    entry = { el: overlayEl, secretId, mapKey: key, source: { type: 'element', el: targetEl } };
+    entry = { el: overlayEl, secretId, mapKey: key, source: { el: targetEl } };
     activeOverlays.set(key, entry);
   }
   positionFromEl(entry.el, targetEl);
@@ -167,10 +126,7 @@ function repositionOverlays() {
 function removeOverlaysForSecret(secretId) {
   removeTextBlursForSecret(secretId);
   for (const [key, entry] of activeOverlays) {
-    if (entry.secretId === secretId) {
-      returnToPool(entry.el);
-      activeOverlays.delete(key);
-    }
+    if (entry.secretId === secretId) { returnToPool(entry.el); activeOverlays.delete(key); }
   }
 }
 
@@ -180,21 +136,11 @@ function clearAllOverlays() {
   activeOverlays.clear();
 }
 
-function returnToPool(el) {
-  el.style.display = 'none';
-  pool.push(el);
-}
+function returnToPool(el) { el.style.display = 'none'; pool.push(el); }
 
 function getElKey(el) {
   if (!el._hushhKey) el._hushhKey = `el-${Math.random().toString(36).slice(2)}`;
   return el._hushhKey;
 }
 
-export {
-  initPool,
-  injectTextBlur,
-  showElementOverlay,
-  repositionOverlays,
-  removeOverlaysForSecret,
-  clearAllOverlays,
-};
+export { initPool, injectTextBlur, showElementOverlay, repositionOverlays, removeOverlaysForSecret, clearAllOverlays };

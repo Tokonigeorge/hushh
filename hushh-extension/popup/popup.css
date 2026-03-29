@@ -71,93 +71,6 @@ body {
 }
 .count-badge.visible { display: inline-block; }
 
-/* ─── Style picker ───────────────────────────────────────────────────────── */
-.style-picker-wrap {
-  padding: 0 16px 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.style-picker-label {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.style-picker {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.style-option {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 8px 4px 6px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  transition: border-color 0.12s, background 0.12s;
-  user-select: none;
-}
-
-.style-option:hover {
-  border-color: rgba(127, 119, 221, 0.4);
-  background: var(--purple-dim);
-}
-
-.style-option.active {
-  border-color: var(--purple);
-  background: var(--purple-light);
-}
-
-.style-preview {
-  width: 44px;
-  height: 28px;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* Blur preview: frosted rectangle */
-.style-preview.blur-preview {
-  background: rgba(200, 200, 200, 0.3);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(127, 119, 221, 0.2);
-  font-size: 11px;
-  font-weight: 700;
-  color: transparent;
-  text-shadow: 0 0 5px rgba(100,100,100,0.8);
-  letter-spacing: 0.02em;
-}
-
-/* Sticker previews: show SVG */
-.style-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.style-name {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--muted);
-  text-align: center;
-}
-
-.style-option.active .style-name {
-  color: var(--purple);
-  font-weight: 600;
-}
-
 /* ─── Content ────────────────────────────────────────────────────────────── */
 .content {
   flex: 1;
@@ -176,6 +89,7 @@ body {
 .state.visible { display: flex; }
 
 .state-icon { font-size: 26px; line-height: 1; }
+.state:not(:has(.state-icon)) { padding-top: 18px; }
 .state-title { font-weight: 600; font-size: 14px; }
 .state-body  { color: var(--muted); font-size: 12px; line-height: 1.55; max-width: 240px; }
 
@@ -223,16 +137,6 @@ body {
 .secret-dot.text     { background: var(--purple); }
 .secret-dot.region   { background: var(--teal); }
 
-.secret-style-icon {
-  width: 18px;
-  height: 14px;
-  flex-shrink: 0;
-  opacity: 0.6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.secret-style-icon img { width: 100%; height: 100%; object-fit: contain; }
 .secret-style-blur {
   width: 18px;
   height: 14px;
@@ -286,12 +190,14 @@ body {
 kbd {
   display: inline-block;
   background: #f0f0f4;
-  border: 1px solid #d8d8e0;
-  border-radius: 3px;
-  padding: 1px 4px;
+  border: 1px solid #d0d0da;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
   font-size: 10px;
   font-family: monospace;
   color: var(--text);
+  line-height: 1.5;
 }
 
 .btn-clear-all {

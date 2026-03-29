@@ -65,9 +65,9 @@
         </div>
 
         <div class="badges">
-          <span class="sticker sticker-purple">🔒 Zero data stored</span>
-          <span class="sticker sticker-peach">🎥 Works with Loom</span>
-          <span class="sticker sticker-teal">✨ Free forever</span>
+          <span class="sticker sticker-purple">Zero data stored</span>
+          <span class="sticker sticker-peach">Works with Loom</span>
+          <span class="sticker sticker-teal">Free forever</span>
         </div>
       </div>
 
@@ -105,10 +105,10 @@
           </div>
         </div>
 
-        <!-- Floating sticker decorations -->
+        <!-- Floating badge -->
         <div style="position:absolute; top:-16px; right:-20px; transform:rotate(6deg)">
           <span class="badge" style="font-size:11px;background:white;box-shadow:0 2px 10px rgba(0,0,0,0.08)">
-            🎯 Value tracked — not position
+            Value tracked — not position
           </span>
         </div>
       </div>
@@ -129,18 +129,25 @@
             <div class="recording-time" id="recTime">00:00</div>
           </div>
           <div class="recording-body">
-            <div class="chat-message">
-              <span style="color:#888;font-size:11px;">Sarah · 2:14 PM</span><br>
-              Hey, can you share the prod API key?
+
+            <!-- Animated chat sequence -->
+            <div class="prob-anim" id="probAnim">
+              <div class="prob-msg prob-msg-1" id="probMsg1">
+                <span class="prob-name">Sarah</span>
+                Hey, can you share the prod API key?
+              </div>
+              <div class="prob-typing" id="probTyping">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="prob-msg prob-msg-you" id="probMsg2">
+                <span class="prob-name">You</span>
+                Sure, here: <span class="prob-secret" id="probSecret">sk-prod-abc123xyz789</span>
+              </div>
+              <div class="prob-warning" id="probWarning">
+                Secret visible in recording
+              </div>
             </div>
-            <div class="chat-message" style="margin-left:20px;background:#3a3a55;">
-              <span style="color:#888;font-size:11px;">You · 2:15 PM</span><br>
-              Sure, here you go: <span class="exposed">sk-prod-abc123xyz789secret</span>
-            </div>
-            <div class="chat-message">
-              <span style="color:#888;font-size:11px;">Sarah · 2:15 PM</span><br>
-              Thanks! 👍
-            </div>
+
           </div>
         </div>
       </div>
@@ -175,7 +182,7 @@
         <div class="step-card">
           <div class="step-number">1</div>
           <h3>Hover. Click. Done.</h3>
-          <p>Activate Hushh with <code>Alt+Shift+H</code> or the toolbar icon. Hover to highlight any element, then click to select it.</p>
+          <p>Activate with <code>⌥⇧H</code> (Mac) or <code>Alt+Shift+H</code> (Windows) or the toolbar icon. Hover any element, then click to select it. Or highlight text first — it protects instantly.</p>
           <div class="step-mini-mock">
             <div class="mini-hover-el">sk-abc123••• — click to protect</div>
           </div>
@@ -186,7 +193,7 @@
           <h3>We grab the secret.</h3>
           <p>Hushh reads the value from the element — password field, API key, or any text — and stores it in memory only. Never sent anywhere.</p>
           <div class="step-mini-mock">
-            <span class="mini-secret-pill"><span class="mini-lock">🔒</span> Secret registered</span>
+            <span class="mini-secret-pill">Secret registered</span>
           </div>
         </div>
 
@@ -212,7 +219,9 @@
         <ul class="features-list reveal-stagger" aria-label="Feature list">
 
           <li class="feature-item">
-            <div class="feature-icon purple">🎯</div>
+            <div class="feature-icon purple">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="3" fill="currentColor"/><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="9" y1="2" x2="9" y2="0" stroke="currentColor" stroke-width="1.5"/><line x1="9" y1="16" x2="9" y2="18" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="9" x2="0" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="16" y1="9" x2="18" y2="9" stroke="currentColor" stroke-width="1.5"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Follows the value, not the position</h4>
               <p>When your secret moves to a new DOM element, the blur follows automatically.</p>
@@ -220,15 +229,19 @@
           </li>
 
           <li class="feature-item">
-            <div class="feature-icon peach">🎥</div>
+            <div class="feature-icon peach">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="3" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="6.5" cy="9" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="10" y1="6.5" x2="15" y2="6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="11.5" x2="15" y2="11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Works with any screen recorder</h4>
-              <p>CSS <code>backdrop-filter</code> renders natively into the OS compositor — Loom, Zoom, Meet, QuickTime all see the blur.</p>
+              <p>CSS <code>filter: blur()</code> renders into the OS compositor — Loom, Zoom, Meet, QuickTime all see the blur.</p>
             </div>
           </li>
 
           <li class="feature-item">
-            <div class="feature-icon teal">🔒</div>
+            <div class="feature-icon teal">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="8" width="10" height="8" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12" r="1" fill="currentColor"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Zero data stored or transmitted</h4>
               <p>Secrets live in-memory only. No localStorage, no cloud, no account. Cleared on tab close.</p>
@@ -236,7 +249,9 @@
           </li>
 
           <li class="feature-item">
-            <div class="feature-icon coral">⚡</div>
+            <div class="feature-icon coral">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1L11.5 7H17L12.5 10.5L14.5 17L9 13L3.5 17L5.5 10.5L1 7H6.5L9 1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>
+            </div>
             <div class="feature-text">
               <h4>Engineered for performance</h4>
               <p>rAF-batched mutation observer means at most one DOM scan per animation frame. No jank, no lag.</p>
@@ -244,10 +259,12 @@
           </li>
 
           <li class="feature-item">
-            <div class="feature-icon purple">⌨️</div>
+            <div class="feature-icon purple">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="4" y="7" width="3" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="8" y="7" width="3" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="12" y="7" width="2" height="4" rx="0.5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+            </div>
             <div class="feature-text">
-              <h4>Keyboard shortcut</h4>
-              <p>Toggle selection mode instantly with <code>Alt+Shift+H</code>. No mouse required to activate.</p>
+              <h4>Keyboard shortcuts</h4>
+              <p><code>⌥⇧H</code> / <code>Alt+Shift+H</code> to protect. <code>⌥⇧X</code> / <code>Alt+Shift+X</code> to clear all. No mouse required.</p>
             </div>
           </li>
 
@@ -255,35 +272,44 @@
       </div>
 
       <div class="reveal">
-        <p style="font-size:0.9rem;color:var(--muted);margin-bottom:16px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;">
+
+        <div class="no-data-callout">
+          <div class="no-data-dot"></div>
+          <div>
+            <div class="no-data-title">No data ever leaves your browser</div>
+            <div class="no-data-body">Hushh makes zero network requests. Your secrets are stored only in page memory and discarded when the tab closes. There is no server. There is no account.</div>
+          </div>
+        </div>
+
+        <p style="font-size:0.9rem;color:var(--muted);margin-bottom:16px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;margin-top:28px;">
           Works with
         </p>
         <div class="compat-grid">
-          <div class="compat-item"><span class="compat-logo">🎥</span>Loom</div>
-          <div class="compat-item"><span class="compat-logo">📹</span>Zoom</div>
-          <div class="compat-item"><span class="compat-logo">📡</span>Google Meet</div>
-          <div class="compat-item"><span class="compat-logo">🖥️</span>QuickTime</div>
-          <div class="compat-item"><span class="compat-logo">🌊</span>OBS</div>
-          <div class="compat-item"><span class="compat-logo">✨</span>Any recorder</div>
+          <div class="compat-item">Loom</div>
+          <div class="compat-item">Zoom</div>
+          <div class="compat-item">Google Meet</div>
+          <div class="compat-item">QuickTime</div>
+          <div class="compat-item">OBS</div>
+          <div class="compat-item">Any recorder</div>
         </div>
 
         <div style="margin-top:24px; background:white; border:1.5px solid var(--border); border-radius:var(--radius); padding:20px;">
           <p style="font-size:0.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Privacy guarantee</p>
           <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
             <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
-              <span>✓</span> No registration or account
+              <span style="color:var(--purple);font-weight:700;">✓</span> No registration or account
             </li>
             <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
-              <span>✓</span> No network calls — ever
+              <span style="color:var(--purple);font-weight:700;">✓</span> No network calls — ever
             </li>
             <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
-              <span>✓</span> No analytics or telemetry
+              <span style="color:var(--purple);font-weight:700;">✓</span> No analytics or telemetry
             </li>
             <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
-              <span>✓</span> Secrets cleared on navigation
+              <span style="color:var(--purple);font-weight:700;">✓</span> Secrets cleared on navigation
             </li>
             <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
-              <span>✓</span> Open to audit
+              <span style="color:var(--purple);font-weight:700;">✓</span> Open to audit
             </li>
           </ul>
         </div>
@@ -292,67 +318,7 @@
     </div>
   </section>
 
-  <!-- ─── Section 5: Social proof ──────────────────────────────────────────── -->
-  <section class="social-proof" aria-labelledby="social-heading">
-    <div class="container">
-      <h2 id="social-heading" class="reveal">Built for people who ship demos,<br>not security incidents.</h2>
-      <p class="reveal">Hushh is made for developers, PMs, designers, and anyone who shares their screen at work.</p>
-
-      <div class="quote-grid reveal-stagger">
-
-        <div class="quote-card">
-          <div class="quote-mark">"</div>
-          <p class="quote-text">
-            I've accidentally leaked an API key on a Loom three times. Never again.
-            Hushh is the first tool that actually solves the real problem.
-          </p>
-          <div class="quote-author">
-            <div class="quote-avatar">👩‍💻</div>
-            <div>
-              <div class="quote-name">— Coming soon</div>
-              <div class="quote-role">Senior Engineer</div>
-            </div>
-          </div>
-          <span class="placeholder-note">Placeholder — to be filled post-launch</span>
-        </div>
-
-        <div class="quote-card">
-          <div class="quote-mark">"</div>
-          <p class="quote-text">
-            Our team does weekly demo recordings for stakeholders.
-            Hushh saves me from manually blurring every sensitive field in post.
-          </p>
-          <div class="quote-author">
-            <div class="quote-avatar">👨‍💼</div>
-            <div>
-              <div class="quote-name">— Coming soon</div>
-              <div class="quote-role">Product Manager</div>
-            </div>
-          </div>
-          <span class="placeholder-note">Placeholder — to be filled post-launch</span>
-        </div>
-
-        <div class="quote-card">
-          <div class="quote-mark">"</div>
-          <p class="quote-text">
-            The "blur follows the value, not the position" insight is brilliant.
-            I've wanted something like this for years.
-          </p>
-          <div class="quote-author">
-            <div class="quote-avatar">🧑‍🎨</div>
-            <div>
-              <div class="quote-name">— Coming soon</div>
-              <div class="quote-role">Developer Advocate</div>
-            </div>
-          </div>
-          <span class="placeholder-note">Placeholder — to be filled post-launch</span>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── Section 6: Footer CTA ─────────────────────────────────────────────── -->
+  <!-- ─── Section 5: Footer CTA ─────────────────────────────────────────────── -->
   <section class="footer-cta" aria-labelledby="cta-heading">
     <div class="container">
       <h2 id="cta-heading">Ready to stop leaking secrets?</h2>
@@ -367,11 +333,11 @@
   <!-- ─── Site footer ────────────────────────────────────────────────────────── -->
   <footer class="site-footer" role="contentinfo">
     <div class="container site-footer-inner">
-      <span class="footer-copy">© 2024 Hushh. Made with 🤫</span>
+      <span class="footer-copy">© 2026 Hushh</span>
       <ul class="footer-links">
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">GitHub</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="https://github.com/Tokonigeorge/hushh" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="mailto:bukolaebikefe@gmail.com">Contact</a></li>
       </ul>
     </div>
   </footer>

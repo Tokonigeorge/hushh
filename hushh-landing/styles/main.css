@@ -578,8 +578,6 @@ section {
   font-family: 'JetBrains Mono', monospace;
 }
 
-.mini-lock { font-size: 14px; }
-
 .mini-blurred-text {
   font-size: 13px;
   color: var(--text);
@@ -630,10 +628,6 @@ section {
   flex-shrink: 0;
 }
 
-.feature-icon.purple { background: var(--purple-light); }
-.feature-icon.peach  { background: rgba(245, 196, 179, 0.3); }
-.feature-icon.teal   { background: rgba(159, 225, 203, 0.3); }
-.feature-icon.coral  { background: rgba(244, 137, 107, 0.15); }
 
 .feature-text h4 {
   font-size: 0.95rem;
@@ -675,98 +669,146 @@ section {
   box-shadow: 0 2px 12px rgba(127, 119, 221, 0.15);
 }
 
-.compat-logo {
-  font-size: 22px;
+
+/* ─── Problem section animation ──────────────────────────────────────────── */
+.prob-anim {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 140px;
+}
+
+.prob-msg {
+  background: #2a2a40;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.prob-msg.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prob-msg-you {
+  margin-left: 16px;
+  background: #3a3a55;
+}
+
+.prob-name {
   display: block;
+  font-size: 10px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.prob-secret {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ccc;
+  transition: color 0.3s, background 0.3s;
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
+.prob-secret.exposed {
+  color: #F4896B;
+  background: rgba(244, 137, 107, 0.15);
+}
+
+.prob-typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.prob-typing.visible { opacity: 1; }
+
+.prob-typing span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #666;
+  animation: typingBounce 1s infinite;
+}
+
+.prob-typing span:nth-child(2) { animation-delay: 0.15s; }
+.prob-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.prob-warning {
+  background: rgba(244, 137, 107, 0.15);
+  border: 1px solid rgba(244, 137, 107, 0.4);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: #F4896B;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.prob-warning.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── No data callout ─────────────────────────────────────────────────────── */
+.no-data-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--purple-light);
+  border: 1.5px solid rgba(127, 119, 221, 0.25);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 0;
+}
+
+.no-data-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--purple);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.no-data-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--purple-dark);
   margin-bottom: 6px;
 }
 
-/* ─── Section 5: Social proof ─────────────────────────────────────────────── */
-.social-proof {
-  text-align: center;
-}
-
-.social-proof > .container > h2 {
-  max-width: 600px;
-  margin: 0 auto 14px;
-}
-
-.social-proof > .container > p {
-  font-size: 1.05rem;
-  max-width: 480px;
-  margin: 0 auto 48px;
-}
-
-.quote-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.quote-card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  text-align: left;
-  position: relative;
-}
-
-.quote-mark {
-  font-size: 32px;
-  line-height: 1;
-  color: var(--purple);
-  margin-bottom: 12px;
-  opacity: 0.4;
-}
-
-.quote-text {
-  font-size: 0.9rem;
+.no-data-body {
+  font-size: 0.85rem;
+  color: var(--purple-dark);
+  opacity: 0.75;
   line-height: 1.6;
-  color: var(--text);
-  margin-bottom: 16px;
-  font-style: italic;
 }
 
-.quote-author {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+/* ─── Feature icon SVG color ──────────────────────────────────────────────── */
+.feature-icon.purple { background: var(--purple-light); color: var(--purple); }
+.feature-icon.peach  { background: rgba(245, 196, 179, 0.3); color: #c0643a; }
+.feature-icon.teal   { background: rgba(159, 225, 203, 0.3); color: #2a7a5e; }
+.feature-icon.coral  { background: rgba(244, 137, 107, 0.15); color: var(--coral); }
 
-.quote-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--purple-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-}
-
-.quote-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.quote-role {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.placeholder-note {
-  display: inline-block;
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--muted);
-  background: rgba(136, 135, 128, 0.1);
-  border-radius: 4px;
-  padding: 2px 8px;
-}
-
-/* ─── Section 6: Footer CTA ───────────────────────────────────────────────── */
+/* ─── Section 5: Footer CTA ───────────────────────────────────────────────── */
 .footer-cta {
   background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
   padding: 80px 0;
@@ -834,6 +876,38 @@ section {
 .footer-copy {
   color: var(--muted);
   font-size: 13px;
+}
+
+/* ─── Privacy page ────────────────────────────────────────────────────────── */
+.privacy-section {
+  margin-bottom: 40px;
+}
+
+.privacy-section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.privacy-section p {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+
+.privacy-section ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.privacy-section ul li {
+  font-size: 0.925rem;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────────────── */

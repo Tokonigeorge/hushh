@@ -3,17 +3,13 @@
 // NOTE: Hushh does NOT read, transmit, or store secrets outside the current
 // page session. No network calls. No persistence. No account required.
 
-import { init as initSelector, enterSelectionMode, exitSelectionMode, isSelectionActive, setOverlayStyle } from './selector.js';
+import { init as initSelector, enterSelectionMode, exitSelectionMode, isSelectionActive } from './selector.js';
 import { removeSecret, getSecrets, clearAll } from './extractor.js';
 import { stopObserver } from './observer.js';
 import { removeOverlaysForSecret, clearAllOverlays, initPool } from './overlay.js';
 
 initPool();
 
-// Load persisted style preference
-chrome.storage.local.get('overlayStyle').then(({ overlayStyle }) => {
-  if (overlayStyle) setOverlayStyle(overlayStyle);
-});
 
 // ─── Selector callbacks ────────────────────────────────────────────────────
 
@@ -46,11 +42,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     case 'REMOVE_SECRET':
       handleRemoveSecret(msg.id);
-      sendResponse({ ok: true });
-      break;
-
-    case 'SET_STYLE':
-      setOverlayStyle(msg.style);
       sendResponse({ ok: true });
       break;
 
@@ -89,7 +80,6 @@ function getSecretsForPopup() {
   return getSecrets().map(s => ({
     id: s.id,
     type: s.type,
-    style: s.style,
     preview: maskSecret(s.raw),
   }));
 }

@@ -9,53 +9,17 @@ const btnActivate   = document.getElementById('btnActivate');
 const btnReload     = document.getElementById('btnReload');
 const btnClearAll   = document.getElementById('btnClearAll');
 const shortcutHint  = document.getElementById('shortcutHint');
-const stylePicker   = document.getElementById('stylePicker');
 
 const isMac = navigator.platform.toUpperCase().includes('MAC');
-const mod   = isMac ? 'Option' : 'Alt';
+const mod   = isMac ? '⌥' : 'Alt';
 
-let currentTabId    = null;
-let currentStyle    = 'blur';
-
-const STICKER_ASSET = {
-  seal:      '../assets/seal.svg',
-  barcode:   '../assets/barcode.svg',
-  starburst: '../assets/starburst.svg',
-};
-
-// ─── Style picker ──────────────────────────────────────────────────────────
-
-async function initStylePicker() {
-  const { overlayStyle } = await chrome.storage.local.get('overlayStyle');
-  setActiveStyle(overlayStyle ?? 'blur', false);
-}
-
-function setActiveStyle(style, persist = true) {
-  currentStyle = style;
-  stylePicker.querySelectorAll('.style-option').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.style === style);
-  });
-  if (persist) {
-    chrome.storage.local.set({ overlayStyle: style });
-    if (currentTabId) {
-      chrome.tabs.sendMessage(currentTabId, { type: 'SET_STYLE', style }).catch(() => {});
-    }
-  }
-}
-
-stylePicker.addEventListener('click', e => {
-  const btn = e.target.closest('.style-option');
-  if (!btn) return;
-  setActiveStyle(btn.dataset.style);
-});
+let currentTabId = null;
 
 // ─── Init ──────────────────────────────────────────────────────────────────
 
 async function init() {
   shortcutHint.innerHTML =
-    `<kbd>${mod}</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> toggle`;
-
-  await initStylePicker();
+    `<kbd>${mod}</kbd><kbd>⇧</kbd><kbd>H</kbd> protect &nbsp;·&nbsp; <kbd>${mod}</kbd><kbd>⇧</kbd><kbd>X</kbd> clear`;
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) { showState('needs-reload'); return; }
@@ -93,17 +57,8 @@ function buildSecretItem(secret) {
   const dot = document.createElement('span');
   dot.className = `secret-dot ${secret.type ?? 'text'}`;
 
-  // Style indicator
   const styleIcon = document.createElement('span');
-  if (secret.style && secret.style !== 'blur') {
-    styleIcon.className = 'secret-style-icon';
-    const img = document.createElement('img');
-    img.src = STICKER_ASSET[secret.style] ?? '';
-    img.alt = secret.style;
-    styleIcon.appendChild(img);
-  } else {
-    styleIcon.className = 'secret-style-blur';
-  }
+  styleIcon.className = 'secret-style-blur';
 
   const preview = document.createElement('span');
   preview.className = 'secret-preview';

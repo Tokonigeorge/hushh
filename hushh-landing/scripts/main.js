@@ -1,4 +1,4 @@
-// scripts/main.js — Scroll animations + hero mockup demo
+// scripts/main.js — Scroll animations + hero mockup demo + problem animation
 
 // ─── Scroll reveal ─────────────────────────────────────────────────────────
 
@@ -19,15 +19,10 @@ document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => {
 });
 
 // ─── Hero mockup: animated blur demo ──────────────────────────────────────
-// Loops through a sequence: hover highlight → click → blur appears → follow
 
 const demoInput   = document.getElementById('demoInput');
-const demoChat    = document.getElementById('demoChat');
-const demoCursor  = document.getElementById('demoCursor');
 const blurOverlay = document.getElementById('demoBlurOverlay');
 const chatBlur    = document.getElementById('chatBlurWord');
-
-const DEMO_SECRET = 'sk-abc123xyz789';
 
 let demoPhase = 0;
 let demoTimer = null;
@@ -68,29 +63,95 @@ function nextDemoStep() {
 
     case 4:
       // Loop
-      demoPhase = -1; // will become 0 after increment
+      demoPhase = -1;
       demoTimer = setTimeout(nextDemoStep, 600);
       break;
   }
   demoPhase++;
 }
 
-// Start demo once hero is visible
-const heroObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        runDemoSequence();
-      }
-    });
-  },
-  { threshold: 0.3 }
-);
-
 const heroBrowserMock = document.querySelector('.hero-visual');
-if (heroBrowserMock) heroObserver.observe(heroBrowserMock);
+if (heroBrowserMock) {
+  const heroObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) runDemoSequence();
+      });
+    },
+    { threshold: 0.3 }
+  );
+  heroObserver.observe(heroBrowserMock);
+}
 
-// ─── Smooth-scroll for "See how it works" link ─────────────────────────────
+// ─── Problem section: animated chat sequence ───────────────────────────────
+
+const probMsg1    = document.getElementById('probMsg1');
+const probMsg2    = document.getElementById('probMsg2');
+const probTyping  = document.getElementById('probTyping');
+const probSecret  = document.getElementById('probSecret');
+const probWarning = document.getElementById('probWarning');
+
+let probTimer = null;
+
+function resetProbAnim() {
+  probMsg1?.classList.remove('visible');
+  probMsg2?.classList.remove('visible');
+  probTyping?.classList.remove('visible');
+  probWarning?.classList.remove('visible');
+  probSecret?.classList.remove('exposed');
+}
+
+function runProbSequence() {
+  clearTimeout(probTimer);
+  resetProbAnim();
+
+  // Step 1: Sarah's message fades in
+  probTimer = setTimeout(() => {
+    probMsg1?.classList.add('visible');
+
+    // Step 2: typing indicator
+    probTimer = setTimeout(() => {
+      probTyping?.classList.add('visible');
+
+      // Step 3: user reply with secret
+      probTimer = setTimeout(() => {
+        probTyping?.classList.remove('visible');
+        probMsg2?.classList.add('visible');
+
+        // Step 4: highlight the secret as exposed
+        probTimer = setTimeout(() => {
+          probSecret?.classList.add('exposed');
+
+          // Step 5: warning appears
+          probTimer = setTimeout(() => {
+            probWarning?.classList.add('visible');
+
+            // Step 6: loop
+            probTimer = setTimeout(runProbSequence, 2800);
+          }, 600);
+        }, 800);
+      }, 1400);
+    }, 1000);
+  }, 400);
+}
+
+const probSection = document.querySelector('.screen-recording-frame');
+if (probSection) {
+  const probObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          runProbSequence();
+          probObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.4 }
+  );
+  probObserver.observe(probSection);
+}
+
+// ─── Smooth-scroll for anchor links ────────────────────────────────────────
 
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', e => {

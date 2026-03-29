@@ -15,66 +15,25 @@
     <span class="count-badge" id="countBadge">0</span>
   </header>
 
-  <!-- Style picker -->
-  <div class="style-picker-wrap">
-    <div class="style-picker-label">Overlay style</div>
-    <div class="style-picker" id="stylePicker">
-
-      <button class="style-option active" data-style="blur" title="Frosted blur">
-        <div class="style-preview blur-preview">abc</div>
-        <span class="style-name">Blur</span>
-      </button>
-
-      <button class="style-option" data-style="seal" title="Seal sticker">
-        <div class="style-preview">
-          <img src="../assets/seal.svg" alt="seal" />
-        </div>
-        <span class="style-name">Seal</span>
-      </button>
-
-      <button class="style-option" data-style="barcode" title="Barcode sticker">
-        <div class="style-preview">
-          <img src="../assets/barcode.svg" alt="barcode" />
-        </div>
-        <span class="style-name">Barcode</span>
-      </button>
-
-      <button class="style-option" data-style="starburst" title="Starburst sticker">
-        <div class="style-preview">
-          <img src="../assets/starburst.svg" alt="starburst" />
-        </div>
-        <span class="style-name">Starburst</span>
-      </button>
-
-    </div>
-  </div>
-
   <main class="content">
 
-    <!-- Needs reload -->
     <div class="state" id="stateReload">
-      <div class="state-icon">🔄</div>
       <div class="state-title">Reload this tab</div>
       <div class="state-body">Hushh was just installed. Reload the page to activate it.</div>
       <button class="btn-activate" id="btnReload">Reload tab</button>
     </div>
 
-    <!-- Inactive / restricted page -->
     <div class="state" id="stateInactive">
-      <div class="state-icon">🤫</div>
       <div class="state-title">Hushh is off</div>
       <div class="state-body">Click to start protecting sensitive info on this page.</div>
       <button class="btn-activate" id="btnActivate">Start protecting</button>
     </div>
 
-    <!-- Active, no secrets yet -->
     <div class="state" id="stateEmpty">
-      <div class="state-icon">👆</div>
       <div class="state-title">Click anything to protect it</div>
-      <div class="state-body">Hover over sensitive text and click to hide it. Shift+drag to draw a region.</div>
+      <div class="state-body">Hover over sensitive text and click to hide it.<br>Or highlight text first, then activate.</div>
     </div>
 
-    <!-- Secrets exist -->
     <ul class="secrets-list" id="secretsList" role="list" aria-label="Active secrets"></ul>
 
   </main>

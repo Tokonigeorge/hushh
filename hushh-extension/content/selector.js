@@ -6,10 +6,8 @@ import { scanFullDocument } from './scanner.js';
 import { startObserver } from './observer.js';
 
 let selectionActive = false;
-let currentOverlayStyle = 'blur';
 
-function setOverlayStyle(style) { currentOverlayStyle = style; }
-function getOverlayStyle()       { return currentOverlayStyle; }
+function setOverlayStyle() {} // no-op — stickers removed, blur only
 let hoveredEl = null;
 let isDragging = false;
 let dragStartX = 0;
@@ -38,6 +36,22 @@ function isSelectionActive() {
 }
 
 function enterSelectionMode() {
+  // If the user already has text selected, protect it immediately — no hover/click needed
+  const sel = window.getSelection();
+  if (sel && !sel.isCollapsed) {
+    const raw = sel.toString().trim();
+    if (raw.length >= 3) {
+      const id = addRawSecret(raw, 'text', 'blur');
+      if (id) {
+        startObserver();
+        scanFullDocument();
+        onSecretAdded?.(id);
+        sel.removeAllRanges();
+        return;
+      }
+    }
+  }
+
   if (selectionActive) return;
   selectionActive = true;
 
@@ -158,14 +172,14 @@ function onClick(e) {
   if (textNode) {
     const raw = textNode.textContent?.trim() ?? '';
     if (raw.length >= 3) {
-      id = addRawSecret(raw, 'text', currentOverlayStyle);
+      id = addRawSecret(raw, 'text', 'blur');
     }
   }
 
   // Fallback: use the hovered element's full value
   if (!id) {
     const target = findMeaningfulElement(e.target) ?? e.target;
-    id = addSecret(target, false, currentOverlayStyle);
+    id = addSecret(target, false, 'blur');
     if (id && hoveredEl) flashConfirm(hoveredEl);
   }
 
@@ -280,7 +294,7 @@ function onMouseUp(e) {
 
   const merged = [...new Set(intersecting)].join(' ');
   if (merged.length >= 3) {
-    const id = addRawSecret(merged, 'region', currentOverlayStyle);
+    const id = addRawSecret(merged, 'region', 'blur');
     if (id) {
       startObserver();
       scanFullDocument();
@@ -343,8 +357,7 @@ function showBanner() {
     text-align: center;
     pointer-events: none;
   `;
-  const mod = isMac() ? 'Option' : 'Alt';
-  banner.textContent = `Hushh active — click to protect  ·  Shift+drag to draw region  ·  Esc to cancel  ·  ${mod}+Shift+X to clear all`;
+  banner.textContent = 'Hushh active — click or draw to protect  ·  Esc to cancel';
   document.documentElement.appendChild(banner);
 }
 
@@ -377,13 +390,10 @@ function findMeaningfulElement(el) {
   return el?.tagName !== 'BODY' && el?.tagName !== 'HTML' ? el : null;
 }
 
-function isMac() {
-  return navigator.platform.toUpperCase().includes('MAC');
-}
 
 function isHushhElement(el) {
   if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
   return el.hasAttribute('data-hushh-overlay') || el.hasAttribute('data-hushh-ui');
 }
 
-export { init, enterSelectionMode, exitSelectionMode, isSelectionActive, setOverlayStyle, getOverlayStyle };
+export { init, enterSelectionMode, exitSelectionMode, isSelectionActive, setOverlayStyle };
