@@ -1,64 +1,59 @@
 // scanner.js — Text scanning logic
-// Scans dirty nodes for registered secret values and schedules overlays.
-// Only scans nodes flagged as dirty by the observer — never the full document
-// except on initial secret registration.
+// Only scans TEXT nodes and input/textarea elements directly.
+
 
 import { getSecrets } from './extractor.js';
 import { showOverlay } from './overlay.js';
 
 /**
- * Get the text content of a node, handling both element and text nodes.
+ * Get the text to match against for a given node.
+ * Returns null if this node type shouldn't be scanned.
  */
-function getNodeText(node) {
+function getMatchText(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     return node.textContent ?? '';
   }
   if (node.nodeType === Node.ELEMENT_NODE) {
-    // For inputs, check value attribute too
-    if (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA') {
+    const tag = node.tagName;
+    // Only check inputs/textareas directly 
+    if (tag === 'INPUT' || tag === 'TEXTAREA') {
       return (node.value ?? '') + ' ' + (node.placeholder ?? '');
     }
-    return node.textContent ?? '';
   }
-  return '';
+  return null; // skip everything else
 }
 
 /**
- * Find the best element to overlay for a given node.
- * For text nodes, walk up to the nearest block-ish or meaningful element.
+ * For a text node, the overlay target is its parent element.
+ * For an input/textarea, it's the element itself.
  */
 function getOverlayTarget(node) {
-  const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
-  if (!el) return null;
-
-  // Walk up to find an element with a non-zero bounding box
-  let current = el;
-  while (current && current !== document.documentElement) {
-    const rect = current.getBoundingClientRect();
-    if (rect.width > 0 && rect.height > 0) return current;
-    current = current.parentElement;
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.parentElement ?? null;
   }
-  return el;
+  return node;
 }
 
 /**
  * Scan a single node against all registered secrets.
  */
 function scanNode(node) {
-  // Skip overlay elements themselves
-  if (node.nodeType === Node.ELEMENT_NODE && node.hasAttribute?.('data-hushh-overlay')) return;
-  if (node.nodeType === Node.ELEMENT_NODE && node.hasAttribute?.('data-hushh-ui')) return;
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.hasAttribute?.('data-hushh-overlay')) return;
+    if (node.hasAttribute?.('data-hushh-ui')) return;
+  }
+
+  const text = getMatchText(node);
+  if (text === null || text.trim() === '') return;
 
   const secrets = getSecrets();
   if (secrets.length === 0) return;
 
-  const text = getNodeText(node).toLowerCase();
-  if (!text) return;
-
+  const lower = text.toLowerCase();
   for (const secret of secrets) {
-    if (text.includes(secret.matchValue)) {
+    if (lower.includes(secret.matchValue)) {
       const target = getOverlayTarget(node);
-      if (target) {
+      if (target && target !== document.body && target !== document.documentElement) {
         showOverlay(secret.id, node, target);
       }
     }
@@ -74,7 +69,6 @@ function scanDirtyNodes(dirtyNodes) {
     dirtyNodes.clear();
     return;
   }
-
   for (const node of dirtyNodes) {
     scanNode(node);
   }
@@ -83,32 +77,37 @@ function scanDirtyNodes(dirtyNodes) {
 
 /**
  * Full document scan — called once when a new secret is registered.
- * Walks all text nodes and relevant elements.
+ * Walks all text nodes + input/textarea elements.
  */
 function scanFullDocument() {
   const secrets = getSecrets();
   if (secrets.length === 0) return;
 
-  const walker = document.createTreeWalker(
+  // Text nodes
+  const textWalker = document.createTreeWalker(
     document.body,
-    NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+    NodeFilter.SHOW_TEXT,
     {
       acceptNode(node) {
-        // Skip hushh UI elements
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          if (node.hasAttribute('data-hushh-overlay')) return NodeFilter.FILTER_REJECT;
-          if (node.hasAttribute('data-hushh-ui')) return NodeFilter.FILTER_REJECT;
-          // Skip script/style
-          if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return NodeFilter.FILTER_REJECT;
-        }
+        const parent = node.parentElement;
+        if (!parent) return NodeFilter.FILTER_REJECT;
+        if (parent.hasAttribute('data-hushh-overlay')) return NodeFilter.FILTER_REJECT;
+        if (parent.hasAttribute('data-hushh-ui')) return NodeFilter.FILTER_REJECT;
+        if (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE') return NodeFilter.FILTER_REJECT;
+        if (!node.textContent?.trim()) return NodeFilter.FILTER_SKIP;
         return NodeFilter.FILTER_ACCEPT;
       },
     }
   );
 
   let node;
-  while ((node = walker.nextNode())) {
+  while ((node = textWalker.nextNode())) {
     scanNode(node);
+  }
+
+
+  for (const el of document.body.querySelectorAll('input, textarea')) {
+    scanNode(el);
   }
 }
 
