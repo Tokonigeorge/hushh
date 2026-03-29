@@ -670,6 +670,287 @@ section {
 }
 
 
+/* ─── QuickBooks mock ─────────────────────────────────────────────────────── */
+.recording-body { min-height: 0; }
+
+.qb-mock {
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, system-ui, sans-serif;
+}
+
+.qb-topbar {
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qb-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.qb-logo-dot {
+  background: #2CA01C;
+  color: white;
+  font-size: 8px;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qb-logo-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2CA01C;
+}
+
+.qb-company-name {
+  font-size: 10px;
+  color: #444;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.qb-chrome {
+  display: flex;
+  flex: 1;
+}
+
+.qb-sidebar {
+  background: #1e2a35;
+  width: 88px;
+  flex-shrink: 0;
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.qb-nav-item {
+  padding: 7px 10px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  border-radius: 4px;
+  margin: 0 5px;
+  cursor: default;
+  transition: background 0.2s, color 0.2s;
+}
+
+.qb-nav-active {
+  background: rgba(255,255,255,0.12);
+  color: white;
+}
+
+.qb-nav-txn-active {
+  color: #4ade80;
+  background: rgba(44, 160, 28, 0.15);
+}
+
+.qb-content {
+  flex: 1;
+  background: #f5f6f8;
+  position: relative;
+  overflow: hidden;
+  min-height: 186px;
+}
+
+.qb-screen {
+  position: absolute;
+  inset: 0;
+  padding: 12px;
+  opacity: 1;
+  transition: opacity 0.35s;
+}
+
+.qb-screen-off {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.qb-screen-title {
+  font-size: 9px;
+  font-weight: 700;
+  color: #1c1c2e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.qb-bank-card {
+  background: white;
+  border: 1px solid #e0e0e8;
+  border-radius: 8px;
+  padding: 11px;
+}
+
+.qb-card-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.07em;
+  margin-bottom: 7px;
+}
+
+.qb-bank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.qb-bank-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #1c1c2e;
+}
+
+.qb-bank-link {
+  font-size: 9px;
+  color: #2CA01C;
+  font-weight: 500;
+}
+
+.qb-bank-detail {
+  display: flex;
+  gap: 24px;
+}
+
+.qb-bank-sublabel {
+  font-size: 8px;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.qb-bank-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1c1c2e;
+  font-family: 'JetBrains Mono', monospace;
+  display: inline-block;
+  transition: filter 0.35s;
+}
+
+.qb-bank-value.qb-hovered {
+  outline: 2px dashed rgba(127, 119, 221, 0.75);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.qb-bank-value.qb-blurred {
+  filter: blur(5px);
+  user-select: none;
+}
+
+/* Transactions screen */
+.qb-txn-list {
+  background: white;
+  border: 1px solid #e0e0e8;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qb-txn-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 55px 72px;
+  padding: 6px 10px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  font-size: 8px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.qb-txn-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 55px 72px;
+  padding: 7px 10px;
+  font-size: 10.5px;
+  color: #1c1c2e;
+  border-bottom: 1px solid #f0f0f4;
+  align-items: center;
+}
+
+.qb-txn-row:last-child { border-bottom: none; }
+
+.qb-txn-highlight { background: rgba(127, 119, 221, 0.04); }
+
+.qb-debit  { color: #e53e3e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+.qb-credit { color: #2CA01C; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+
+.qb-blurred-val {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  filter: blur(5px);
+  user-select: none;
+  background: rgba(127, 119, 221, 0.12);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+
+.hushh-followed {
+  margin-top: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple);
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.4s, transform 0.4s;
+  letter-spacing: -0.01em;
+}
+
+.hushh-followed.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.qb-cursor {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(127, 119, 221, 0.9);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s, left 0.5s cubic-bezier(.4,0,.2,1), top 0.5s cubic-bezier(.4,0,.2,1), transform 0.15s;
+  z-index: 10;
+  transform: translate(-50%, -50%);
+}
+
+.qb-cursor.visible { opacity: 1; }
+.qb-cursor.click   { background: rgba(127,119,221,0.25); transform: translate(-50%,-50%) scale(0.75); }
+
+
+.qb-tip {
+  position: absolute;
+  background: rgba(26, 26, 46, 0.92);
+  color: white;
+  font-size: 9.5px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+  z-index: 11;
+  transition: opacity 0.2s;
+}
+
+.qb-tip.visible { opacity: 1; }
+
 /* ─── Problem section animation ──────────────────────────────────────────── */
 .prob-anim {
   display: flex;

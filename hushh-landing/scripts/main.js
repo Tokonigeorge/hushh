@@ -83,75 +83,111 @@ if (heroBrowserMock) {
   heroObserver.observe(heroBrowserMock);
 }
 
-// ─── Problem section: animated chat sequence ───────────────────────────────
 
-const probMsg1    = document.getElementById('probMsg1');
-const probMsg2    = document.getElementById('probMsg2');
-const probTyping  = document.getElementById('probTyping');
-const probSecret  = document.getElementById('probSecret');
-const probWarning = document.getElementById('probWarning');
+const qbNavDash   = document.getElementById('qbNavDash');
+const qbNavTxn    = document.getElementById('qbNavTxn');
+const qbScreenDash = document.getElementById('qbScreenDash');
+const qbScreenTxn  = document.getElementById('qbScreenTxn');
+const qbBalance1  = document.getElementById('qbBalance1');
+const qbCursor    = document.getElementById('qbCursor');
+const qbTip       = document.getElementById('qbTip');
+const hushhFollowed = document.getElementById('hushhFollowed');
+const qbContent   = document.getElementById('qbContent');
 
-let probTimer = null;
+let qbTimer = null;
 
-function resetProbAnim() {
-  probMsg1?.classList.remove('visible');
-  probMsg2?.classList.remove('visible');
-  probTyping?.classList.remove('visible');
-  probWarning?.classList.remove('visible');
-  probSecret?.classList.remove('exposed');
+function resetQB() {
+  clearTimeout(qbTimer);
+
+
+  qbScreenDash?.classList.remove('qb-screen-off');
+  qbScreenTxn?.classList.add('qb-screen-off');
+
+
+  qbNavDash?.classList.add('qb-nav-active');
+  qbNavTxn?.classList.remove('qb-nav-active', 'qb-nav-txn-active');
+
+
+  qbBalance1?.classList.remove('qb-hovered', 'qb-blurred');
+
+  qbCursor?.classList.remove('visible', 'click');
+  qbTip?.classList.remove('visible');
+  hushhFollowed?.classList.remove('visible');
 }
 
-function runProbSequence() {
-  clearTimeout(probTimer);
-  resetProbAnim();
+function runQBSequence() {
+  resetQB();
 
-  // Step 1: Sarah's message fades in
-  probTimer = setTimeout(() => {
-    probMsg1?.classList.add('visible');
 
-    // Step 2: typing indicator
-    probTimer = setTimeout(() => {
-      probTyping?.classList.add('visible');
+  qbTimer = setTimeout(() => {
 
-      // Step 3: user reply with secret
-      probTimer = setTimeout(() => {
-        probTyping?.classList.remove('visible');
-        probMsg2?.classList.add('visible');
 
-        // Step 4: highlight the secret as exposed
-        probTimer = setTimeout(() => {
-          probSecret?.classList.add('exposed');
+    if (qbCursor && qbBalance1 && qbContent) {
+      const balRect = qbBalance1.getBoundingClientRect();
+      const conRect = qbContent.getBoundingClientRect();
+      const cx = balRect.left - conRect.left + balRect.width * 0.4;
+      const cy = balRect.top  - conRect.top  + balRect.height * 0.5;
+      qbCursor.style.left = cx + 'px';
+      qbCursor.style.top  = cy + 'px';
+      qbCursor.classList.add('visible');
+    }
+    qbBalance1?.classList.add('qb-hovered');
 
-          // Step 5: warning appears
-          probTimer = setTimeout(() => {
-            probWarning?.classList.add('visible');
+    qbTimer = setTimeout(() => {
+      if (qbCursor && qbTip && qbContent) {
+        const cx = parseFloat(qbCursor.style.left);
+        const cy = parseFloat(qbCursor.style.top);
+        qbTip.style.left = (cx + 16) + 'px';
+        qbTip.style.top  = (cy - 22) + 'px';
+      }
+      qbTip?.classList.add('visible');
 
-            // Step 6: loop
-            probTimer = setTimeout(runProbSequence, 2800);
-          }, 600);
-        }, 800);
-      }, 1400);
-    }, 1000);
-  }, 400);
+
+      qbTimer = setTimeout(() => {
+        qbTip?.classList.remove('visible');
+        qbCursor?.classList.add('click');
+        qbBalance1?.classList.remove('qb-hovered');
+
+        qbTimer = setTimeout(() => {
+          qbBalance1?.classList.add('qb-blurred');
+          qbCursor?.classList.remove('visible', 'click');
+
+          qbTimer = setTimeout(() => {
+            qbNavDash?.classList.remove('qb-nav-active');
+            qbNavTxn?.classList.add('qb-nav-txn-active');
+
+            qbTimer = setTimeout(() => {
+              qbScreenDash?.classList.add('qb-screen-off');
+              qbScreenTxn?.classList.remove('qb-screen-off');
+
+              qbTimer = setTimeout(() => {
+                hushhFollowed?.classList.add('visible');
+
+                qbTimer = setTimeout(runQBSequence, 3200);
+              }, 700);
+            }, 400);
+          }, 1000);
+        }, 300);
+      }, 900);
+    }, 500);
+  }, 1000);
 }
 
-const probSection = document.querySelector('.screen-recording-frame');
-if (probSection) {
-  const probObserver = new IntersectionObserver(
+const qbSection = document.querySelector('.screen-recording-frame');
+if (qbSection) {
+  const qbObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          runProbSequence();
-          probObserver.unobserve(entry.target);
+          runQBSequence();
+          qbObserver.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.4 }
+    { threshold: 0.3 }
   );
-  probObserver.observe(probSection);
+  qbObserver.observe(qbSection);
 }
-
-// ─── Smooth-scroll for anchor links ────────────────────────────────────────
 
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', e => {
@@ -163,8 +199,6 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     }
   });
 });
-
-// ─── Recording timer (cosmetic) ────────────────────────────────────────────
 
 const recTime = document.getElementById('recTime');
 if (recTime) {

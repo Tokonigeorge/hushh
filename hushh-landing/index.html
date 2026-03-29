@@ -128,23 +128,78 @@
             </div>
             <div class="recording-time" id="recTime">00:00</div>
           </div>
-          <div class="recording-body">
+          <div class="recording-body" style="padding:0;">
 
-            <!-- Animated chat sequence -->
-            <div class="prob-anim" id="probAnim">
-              <div class="prob-msg prob-msg-1" id="probMsg1">
-                <span class="prob-name">Sarah</span>
-                Hey, can you share the prod API key?
+            <!-- QuickBooks mock -->
+            <div class="qb-mock">
+              <div class="qb-topbar">
+                <div class="qb-logo-wrap">
+                  <div class="qb-logo-dot">qb</div>
+                  <span class="qb-logo-text">quickbooks</span>
+                </div>
+                <div class="qb-company-name">Craig's Design &amp; Landscaping</div>
               </div>
-              <div class="prob-typing" id="probTyping">
-                <span></span><span></span><span></span>
-              </div>
-              <div class="prob-msg prob-msg-you" id="probMsg2">
-                <span class="prob-name">You</span>
-                Sure, here: <span class="prob-secret" id="probSecret">sk-prod-abc123xyz789</span>
-              </div>
-              <div class="prob-warning" id="probWarning">
-                Secret visible in recording
+              <div class="qb-chrome">
+                <div class="qb-sidebar">
+                  <div class="qb-nav-item qb-nav-active" id="qbNavDash">Dashboard</div>
+                  <div class="qb-nav-item" id="qbNavTxn">Transactions</div>
+                  <div class="qb-nav-item">Expenses</div>
+                  <div class="qb-nav-item">Reports</div>
+                </div>
+                <div class="qb-content" id="qbContent">
+
+                  <!-- Screen 1: Dashboard -->
+                  <div class="qb-screen" id="qbScreenDash">
+                    <div class="qb-screen-title">Business Overview</div>
+                    <div class="qb-bank-card">
+                      <div class="qb-card-label">BANK ACCOUNTS</div>
+                      <div class="qb-bank-row">
+                        <div class="qb-bank-name">CHECKING</div>
+                        <div class="qb-bank-link">94 to review</div>
+                      </div>
+                      <div class="qb-bank-detail">
+                        <div>
+                          <div class="qb-bank-sublabel">Bank balance</div>
+                          <div class="qb-bank-value" id="qbBalance1">$12,435.65</div>
+                        </div>
+                        <div>
+                          <div class="qb-bank-sublabel">In QuickBooks</div>
+                          <div class="qb-bank-value">$4,987.43</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Screen 2: Transactions -->
+                  <div class="qb-screen qb-screen-off" id="qbScreenTxn">
+                    <div class="qb-screen-title">Transactions — Checking</div>
+                    <div class="qb-txn-list">
+                      <div class="qb-txn-header">
+                        <span>Date</span><span>Description</span><span>Amount</span><span>Balance</span>
+                      </div>
+                      <div class="qb-txn-row qb-txn-highlight">
+                        <span>Mar 1</span>
+                        <span>Opening balance</span>
+                        <span>—</span>
+                        <span><span class="qb-blurred-val">$12,435.65</span></span>
+                      </div>
+                      <div class="qb-txn-row">
+                        <span>Mar 3</span><span>Adobe Inc.</span>
+                        <span class="qb-debit">-$54.99</span><span>$12,380.66</span>
+                      </div>
+                      <div class="qb-txn-row">
+                        <span>Mar 5</span><span>Client payment</span>
+                        <span class="qb-credit">+$3,200.00</span><span>$15,580.66</span>
+                      </div>
+                    </div>
+                    <div class="hushh-followed" id="hushhFollowed">Hushh followed it.</div>
+                  </div>
+
+                  <!-- Cursor + tooltip (inside qb-content for relative positioning) -->
+                  <div class="qb-cursor" id="qbCursor"></div>
+                  <div class="qb-tip" id="qbTip">"$12,435.65" — click to protect</div>
+
+                </div>
               </div>
             </div>
 
