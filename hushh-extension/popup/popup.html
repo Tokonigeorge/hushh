@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hushh</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark">H</div>
+      Hushh
+    </div>
+    <span class="count-badge" id="countBadge">0</span>
+  </header>
+
+  <!-- Main content -->
+  <main class="content">
+    <!-- State: inactive (no active tab or can't inject) -->
+    <div class="state" id="stateInactive">
+      <div class="state-icon">🤫</div>
+      <div class="state-title">Hushh is off</div>
+      <div class="state-body">Click to start protecting sensitive info on this page.</div>
+      <button class="btn-activate" id="btnActivate">Start protecting</button>
+    </div>
+
+    <!-- State: active, no secrets yet -->
+    <div class="state" id="stateEmpty">
+      <div class="state-icon">👆</div>
+      <div class="state-title">Click anything to protect it</div>
+      <div class="state-body">
+        Hover over a password, API key, or any sensitive text on the page, then click to hide it.
+        Or draw a rectangle to capture a region.
+      </div>
+    </div>
+
+    <!-- State: secrets exist -->
+    <ul class="secrets-list" id="secretsList" role="list" aria-label="Active secrets">
+      <!-- Populated by popup.js -->
+    </ul>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span class="footer-hint">
+      Toggle: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd>
+    </span>
+    <button class="btn-clear-all" id="btnClearAll">Clear all</button>
+  </footer>
+
+  <script src="../dist/popup/popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "hushh-extension",
+  "version": "1.0.0",
+  "description": "Hushh Chrome extension build",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "build:prod": "node build.js --prod"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  }
+}

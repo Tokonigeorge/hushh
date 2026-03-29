@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hushh — Hide secrets during screen recordings</title>
+  <meta name="description" content="Hushh hides sensitive info during screen recordings and screenshots — automatically, wherever it moves. Free Chrome extension." />
+  <meta property="og:title" content="Hushh — Your secrets stay secret." />
+  <meta property="og:description" content="Protect passwords, API keys, and personal data during screen recordings. Point. Click. Hidden." />
+  <meta property="og:image" content="assets/og-image.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+</head>
+<body>
+
+  <!-- ─── Nav ─────────────────────────────────────────────────────────────── -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="container nav-inner">
+      <a class="nav-logo" href="#">
+        <div class="nav-logo-mark">H</div>
+        Hushh
+      </a>
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#" class="nav-cta">Add to Chrome — free</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ─── Section 1: Hero ──────────────────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="container hero-inner">
+
+      <div class="hero-text hero-text-enter">
+        <div class="hero-label">
+          <span>✦</span> Chrome Extension
+        </div>
+
+        <h1 id="hero-heading">
+          Your secrets<br>
+          <span class="accent">stay secret.</span>
+        </h1>
+
+        <p class="hero-sub">
+          Hushh hides sensitive info during screen recordings and screenshots —
+          automatically, wherever it moves.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 1L14 8L8 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Add to Chrome — it's free
+          </a>
+          <a href="#how-it-works" class="btn-secondary">
+            See how it works ↓
+          </a>
+        </div>
+
+        <div class="badges">
+          <span class="sticker sticker-purple">🔒 Zero data stored</span>
+          <span class="sticker sticker-peach">🎥 Works with Loom</span>
+          <span class="sticker sticker-teal">✨ Free forever</span>
+        </div>
+      </div>
+
+      <!-- Browser mockup with animated demo -->
+      <div class="hero-visual hero-visual-enter" aria-hidden="true">
+        <div class="browser-mock">
+          <div class="browser-bar">
+            <div class="browser-dots">
+              <div class="browser-dot bd-red"></div>
+              <div class="browser-dot bd-yellow"></div>
+              <div class="browser-dot bd-green"></div>
+            </div>
+            <div class="browser-url">myapp.example.com/settings</div>
+          </div>
+          <div class="browser-body">
+            <div class="hushh-active-hint">Hushh active — click or draw to protect · Esc to cancel</div>
+
+            <div class="demo-page" style="margin-top: 32px;">
+              <div class="demo-field">
+                <div class="demo-label">API Key</div>
+                <div class="demo-input demo-blurred" id="demoInput" style="position:relative">
+                  <span>sk-abc123xyz789</span>
+                  <span style="font-size:11px;color:#888">●●●●●●●●</span>
+                  <div class="blur-overlay" id="demoBlurOverlay"></div>
+                </div>
+              </div>
+
+              <div class="demo-field" style="margin-top: 10px;">
+                <div class="demo-label">Chat preview</div>
+                <div class="demo-chat" id="demoChat">
+                  Your key <span class="blurred-word" id="chatBlurWord">sk-abc123xyz789</span> has been rotated.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating sticker decorations -->
+        <div style="position:absolute; top:-16px; right:-20px; transform:rotate(6deg)">
+          <span class="badge" style="font-size:11px;background:white;box-shadow:0 2px 10px rgba(0,0,0,0.08)">
+            🎯 Value tracked — not position
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Section 2: Problem ────────────────────────────────────────────────── -->
+  <section class="problem" aria-labelledby="problem-heading">
+    <div class="container problem-inner">
+
+      <div class="problem-visual reveal">
+        <div class="screen-recording-frame">
+          <div class="recording-header">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="recording-dot rec-pulse"></div>
+              <div class="recording-label">RECORDING</div>
+            </div>
+            <div class="recording-time" id="recTime">00:00</div>
+          </div>
+          <div class="recording-body">
+            <div class="chat-message">
+              <span style="color:#888;font-size:11px;">Sarah · 2:14 PM</span><br>
+              Hey, can you share the prod API key?
+            </div>
+            <div class="chat-message" style="margin-left:20px;background:#3a3a55;">
+              <span style="color:#888;font-size:11px;">You · 2:15 PM</span><br>
+              Sure, here you go: <span class="exposed">sk-prod-abc123xyz789secret</span>
+            </div>
+            <div class="chat-message">
+              <span style="color:#888;font-size:11px;">Sarah · 2:15 PM</span><br>
+              Thanks! 👍
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="problem-copy reveal">
+        <div class="kicker">The problem</div>
+        <h2 id="problem-heading">
+          You blurred the input.<br>Then it moved.
+        </h2>
+        <p>
+          You carefully covered the password field with a sticky note.
+          Then someone pasted it into Slack. Then it appeared in a chat log.
+          Then in a system status message.
+        </p>
+        <p>
+          Fixed-region blurs don't follow data. Hushh does.
+          The secret gets hidden wherever it surfaces — automatically.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── Section 3: How it works ──────────────────────────────────────────── -->
+  <section id="how-it-works" aria-labelledby="how-heading">
+    <div class="container how-inner">
+      <h2 id="how-heading" class="reveal">Three steps to invisible.</h2>
+      <p class="reveal">No signup. No typing. No copy-pasting. You point at what you want hidden. That's it.</p>
+
+      <div class="steps reveal-stagger">
+
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Hover. Click. Done.</h3>
+          <p>Activate Hushh with <code>Alt+Shift+H</code> or the toolbar icon. Hover to highlight any element, then click to select it.</p>
+          <div class="step-mini-mock">
+            <div class="mini-hover-el">sk-abc123••• — click to protect</div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>We grab the secret.</h3>
+          <p>Hushh reads the value from the element — password field, API key, or any text — and stores it in memory only. Never sent anywhere.</p>
+          <div class="step-mini-mock">
+            <span class="mini-secret-pill"><span class="mini-lock">🔒</span> Secret registered</span>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>It stays hidden. Everywhere.</h3>
+          <p>A DOM observer watches the whole page. Every time that value appears — in any element, anywhere — it gets blurred automatically.</p>
+          <div class="step-mini-mock">
+            <span class="mini-blurred-text">Key: <span class="blur-span">sk-abc123xyz789</span></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Section 4: Features ───────────────────────────────────────────────── -->
+  <section id="features" class="features" aria-labelledby="features-heading">
+    <div class="container features-inner">
+
+      <div class="reveal">
+        <h2 id="features-heading" style="margin-bottom:32px;">Built to actually work.</h2>
+        <ul class="features-list reveal-stagger" aria-label="Feature list">
+
+          <li class="feature-item">
+            <div class="feature-icon purple">🎯</div>
+            <div class="feature-text">
+              <h4>Follows the value, not the position</h4>
+              <p>When your secret moves to a new DOM element, the blur follows automatically.</p>
+            </div>
+          </li>
+
+          <li class="feature-item">
+            <div class="feature-icon peach">🎥</div>
+            <div class="feature-text">
+              <h4>Works with any screen recorder</h4>
+              <p>CSS <code>backdrop-filter</code> renders natively into the OS compositor — Loom, Zoom, Meet, QuickTime all see the blur.</p>
+            </div>
+          </li>
+
+          <li class="feature-item">
+            <div class="feature-icon teal">🔒</div>
+            <div class="feature-text">
+              <h4>Zero data stored or transmitted</h4>
+              <p>Secrets live in-memory only. No localStorage, no cloud, no account. Cleared on tab close.</p>
+            </div>
+          </li>
+
+          <li class="feature-item">
+            <div class="feature-icon coral">⚡</div>
+            <div class="feature-text">
+              <h4>Engineered for performance</h4>
+              <p>rAF-batched mutation observer means at most one DOM scan per animation frame. No jank, no lag.</p>
+            </div>
+          </li>
+
+          <li class="feature-item">
+            <div class="feature-icon purple">⌨️</div>
+            <div class="feature-text">
+              <h4>Keyboard shortcut</h4>
+              <p>Toggle selection mode instantly with <code>Alt+Shift+H</code>. No mouse required to activate.</p>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+
+      <div class="reveal">
+        <p style="font-size:0.9rem;color:var(--muted);margin-bottom:16px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;">
+          Works with
+        </p>
+        <div class="compat-grid">
+          <div class="compat-item"><span class="compat-logo">🎥</span>Loom</div>
+          <div class="compat-item"><span class="compat-logo">📹</span>Zoom</div>
+          <div class="compat-item"><span class="compat-logo">📡</span>Google Meet</div>
+          <div class="compat-item"><span class="compat-logo">🖥️</span>QuickTime</div>
+          <div class="compat-item"><span class="compat-logo">🌊</span>OBS</div>
+          <div class="compat-item"><span class="compat-logo">✨</span>Any recorder</div>
+        </div>
+
+        <div style="margin-top:24px; background:white; border:1.5px solid var(--border); border-radius:var(--radius); padding:20px;">
+          <p style="font-size:0.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Privacy guarantee</p>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+            <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
+              <span>✓</span> No registration or account
+            </li>
+            <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
+              <span>✓</span> No network calls — ever
+            </li>
+            <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
+              <span>✓</span> No analytics or telemetry
+            </li>
+            <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
+              <span>✓</span> Secrets cleared on navigation
+            </li>
+            <li style="display:flex;gap:8px;font-size:0.875rem;color:var(--text);">
+              <span>✓</span> Open to audit
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── Section 5: Social proof ──────────────────────────────────────────── -->
+  <section class="social-proof" aria-labelledby="social-heading">
+    <div class="container">
+      <h2 id="social-heading" class="reveal">Built for people who ship demos,<br>not security incidents.</h2>
+      <p class="reveal">Hushh is made for developers, PMs, designers, and anyone who shares their screen at work.</p>
+
+      <div class="quote-grid reveal-stagger">
+
+        <div class="quote-card">
+          <div class="quote-mark">"</div>
+          <p class="quote-text">
+            I've accidentally leaked an API key on a Loom three times. Never again.
+            Hushh is the first tool that actually solves the real problem.
+          </p>
+          <div class="quote-author">
+            <div class="quote-avatar">👩‍💻</div>
+            <div>
+              <div class="quote-name">— Coming soon</div>
+              <div class="quote-role">Senior Engineer</div>
+            </div>
+          </div>
+          <span class="placeholder-note">Placeholder — to be filled post-launch</span>
+        </div>
+
+        <div class="quote-card">
+          <div class="quote-mark">"</div>
+          <p class="quote-text">
+            Our team does weekly demo recordings for stakeholders.
+            Hushh saves me from manually blurring every sensitive field in post.
+          </p>
+          <div class="quote-author">
+            <div class="quote-avatar">👨‍💼</div>
+            <div>
+              <div class="quote-name">— Coming soon</div>
+              <div class="quote-role">Product Manager</div>
+            </div>
+          </div>
+          <span class="placeholder-note">Placeholder — to be filled post-launch</span>
+        </div>
+
+        <div class="quote-card">
+          <div class="quote-mark">"</div>
+          <p class="quote-text">
+            The "blur follows the value, not the position" insight is brilliant.
+            I've wanted something like this for years.
+          </p>
+          <div class="quote-author">
+            <div class="quote-avatar">🧑‍🎨</div>
+            <div>
+              <div class="quote-name">— Coming soon</div>
+              <div class="quote-role">Developer Advocate</div>
+            </div>
+          </div>
+          <span class="placeholder-note">Placeholder — to be filled post-launch</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Section 6: Footer CTA ─────────────────────────────────────────────── -->
+  <section class="footer-cta" aria-labelledby="cta-heading">
+    <div class="container">
+      <h2 id="cta-heading">Ready to stop leaking secrets?</h2>
+      <p>One click to install. Zero configuration. Works instantly.</p>
+      <a href="#" class="btn-primary">
+        Add to Chrome — it's free
+      </a>
+      <p class="footer-tagline">Hushh. Because some things aren't meant to be seen.</p>
+    </div>
+  </section>
+
+  <!-- ─── Site footer ────────────────────────────────────────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container site-footer-inner">
+      <span class="footer-copy">© 2024 Hushh. Made with 🤫</span>
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">GitHub</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="scripts/main.js" defer></script>
+</body>
+</html>
