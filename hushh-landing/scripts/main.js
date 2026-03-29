@@ -1,7 +1,3 @@
-// scripts/main.js — Scroll animations + hero mockup demo + problem animation
-
-// ─── Scroll reveal ─────────────────────────────────────────────────────────
-
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach(entry => {
@@ -17,8 +13,6 @@ const revealObserver = new IntersectionObserver(
 document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => {
   revealObserver.observe(el);
 });
-
-// ─── Hero mockup: animated blur demo ──────────────────────────────────────
 
 const demoInput   = document.getElementById('demoInput');
 const blurOverlay = document.getElementById('demoBlurOverlay');
@@ -36,7 +30,6 @@ function runDemoSequence() {
 function nextDemoStep() {
   switch (demoPhase) {
     case 0:
-      // Reset
       if (demoInput)  demoInput.classList.remove('selected');
       if (blurOverlay) blurOverlay.classList.remove('active');
       if (chatBlur)   chatBlur.style.filter = '';
@@ -44,25 +37,21 @@ function nextDemoStep() {
       break;
 
     case 1:
-      // Hover: dashed outline on input
       if (demoInput) demoInput.classList.add('selected');
       demoTimer = setTimeout(nextDemoStep, 1200);
       break;
 
     case 2:
-      // Click: blur the input
       if (blurOverlay) blurOverlay.classList.add('active');
       demoTimer = setTimeout(nextDemoStep, 700);
       break;
 
     case 3:
-      // Value "follows" to chat — blur the chat word too
       if (chatBlur) chatBlur.style.filter = 'blur(5px)';
       demoTimer = setTimeout(nextDemoStep, 2400);
       break;
 
     case 4:
-      // Loop
       demoPhase = -1;
       demoTimer = setTimeout(nextDemoStep, 600);
       break;
@@ -98,18 +87,11 @@ let qbTimer = null;
 
 function resetQB() {
   clearTimeout(qbTimer);
-
-
   qbScreenDash?.classList.remove('qb-screen-off');
   qbScreenTxn?.classList.add('qb-screen-off');
-
-
   qbNavDash?.classList.add('qb-nav-active');
   qbNavTxn?.classList.remove('qb-nav-active', 'qb-nav-txn-active');
-
-
   qbBalance1?.classList.remove('qb-hovered', 'qb-blurred');
-
   qbCursor?.classList.remove('visible', 'click');
   qbTip?.classList.remove('visible');
   hushhFollowed?.classList.remove('visible');
@@ -117,11 +99,7 @@ function resetQB() {
 
 function runQBSequence() {
   resetQB();
-
-
   qbTimer = setTimeout(() => {
-
-
     if (qbCursor && qbBalance1 && qbContent) {
       const balRect = qbBalance1.getBoundingClientRect();
       const conRect = qbContent.getBoundingClientRect();

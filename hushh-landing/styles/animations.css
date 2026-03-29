@@ -1,6 +1,3 @@
-/* animations.css — Hushh landing page animations */
-
-/* ─── Scroll-reveal ───────────────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -13,7 +10,6 @@
   transform: translateY(0);
 }
 
-/* Staggered children */
 .reveal-stagger > * {
   opacity: 0;
   transform: translateY(20px);
@@ -28,7 +24,6 @@
 .reveal-stagger.visible > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 320ms; }
 .reveal-stagger.visible > *:nth-child(6) { opacity: 1; transform: translateY(0); transition-delay: 400ms; }
 
-/* ─── Hero entrance ───────────────────────────────────────────────────────── */
 .hero-text-enter {
   animation: heroTextIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -46,9 +41,6 @@
   from { opacity: 0; transform: translateY(20px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-
-/* ─── Blur demo animation ─────────────────────────────────────────────────── */
-/* Simulates the click-to-protect flow in the hero mockup */
 
 .demo-input.selected {
   border-color: rgba(127, 119, 221, 0.7);
@@ -78,7 +70,6 @@
   background: rgba(200, 200, 200, 0.25);
 }
 
-/* ─── Floating sticker badges ─────────────────────────────────────────────── */
 .sticker {
   display: inline-flex;
   align-items: center;
@@ -103,7 +94,6 @@
 .sticker-peach  { background: rgba(245, 196, 179, 0.3); color: #b05a3a; border: 1.5px solid rgba(245, 196, 179, 0.5); }
 .sticker-teal   { background: rgba(159, 225, 203, 0.3); color: #2a8a6e; border: 1.5px solid rgba(159, 225, 203, 0.5); }
 
-/* ─── Recording dot pulse ─────────────────────────────────────────────────── */
 .rec-pulse {
   animation: recPulse 1.2s ease-in-out infinite;
 }
@@ -113,12 +103,10 @@
   50%       { opacity: 0.5; transform: scale(0.85); }
 }
 
-/* ─── Blur-in transition for the chat word ───────────────────────────────── */
 .blurred-word {
   transition: filter 0.6s ease;
 }
 
-/* ─── Hover lift for step cards ───────────────────────────────────────────── */
 .step-card {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);

@@ -1,5 +1,3 @@
-// popup.js
-
 const stateReload   = document.getElementById('stateReload');
 const stateInactive = document.getElementById('stateInactive');
 const stateEmpty    = document.getElementById('stateEmpty');
@@ -10,12 +8,10 @@ const btnReload     = document.getElementById('btnReload');
 const btnClearAll   = document.getElementById('btnClearAll');
 const shortcutHint  = document.getElementById('shortcutHint');
 
-const isMac = navigator.platform.toUpperCase().includes('MAC');
-const mod   = isMac ? '⌥' : 'Alt';
+const isMac = navigator.userAgentData?.platform === 'macOS';
+const mod = isMac ? '⌥' : 'Alt';
 
 let currentTabId = null;
-
-// ─── Init ──────────────────────────────────────────────────────────────────
 
 async function init() {
   shortcutHint.innerHTML =
@@ -36,8 +32,6 @@ async function init() {
   }
 }
 
-// ─── Rendering ────────────────────────────────────────────────────────────
-
 function renderSecrets(secrets) {
   secretsList.innerHTML = '';
   if (secrets.length === 0) { showState('empty'); return; }
@@ -57,8 +51,8 @@ function buildSecretItem(secret) {
   const dot = document.createElement('span');
   dot.className = `secret-dot ${secret.type ?? 'text'}`;
 
-  const styleIcon = document.createElement('span');
-  styleIcon.className = 'secret-style-blur';
+  const blurIcon = document.createElement('span');
+  blurIcon.className = 'secret-style-blur';
 
   const preview = document.createElement('span');
   preview.className = 'secret-preview';
@@ -70,25 +64,22 @@ function buildSecretItem(secret) {
   remove.title = 'Remove';
   remove.addEventListener('click', () => handleRemove(secret.id));
 
-  li.append(dot, styleIcon, preview, remove);
+  li.append(dot, blurIcon, preview, remove);
   return li;
 }
 
+const STATE_ELS = {
+  'needs-reload': stateReload,
+  'inactive':     stateInactive,
+  'empty':        stateEmpty,
+  'list':         secretsList,
+};
+
 function showState(state) {
-  stateReload.classList.remove('visible');
-  stateInactive.classList.remove('visible');
-  stateEmpty.classList.remove('visible');
-  secretsList.classList.remove('visible');
-  countBadge.classList.remove('visible');
-  btnClearAll.classList.remove('visible');
-
-  if      (state === 'needs-reload') stateReload.classList.add('visible');
-  else if (state === 'inactive')     stateInactive.classList.add('visible');
-  else if (state === 'empty')        stateEmpty.classList.add('visible');
-  else if (state === 'list')         secretsList.classList.add('visible');
+  [stateReload, stateInactive, stateEmpty, secretsList, countBadge, btnClearAll]
+    .forEach(el => el.classList.remove('visible'));
+  STATE_ELS[state]?.classList.add('visible');
 }
-
-// ─── Actions ──────────────────────────────────────────────────────────────
 
 btnActivate.addEventListener('click', async () => {
   if (!currentTabId) return;

@@ -1,13 +1,4 @@
-// overlay.js — Overlay renderer
-//
-// TEXT nodes: inject a <span data-hushh-blur> with filter:blur() around the
-//   matched text. Moves with content — zero scroll lag.
-//
-// INPUT / TEXTAREA: position:fixed overlay div (can't inject into input values).
-
-// ─── Span injection (text nodes) ──────────────────────────────────────────
-
-const spansForSecret = new Map(); // secretId → Set<span>
+const spansForSecret = new Map();
 
 function injectTextBlur(textNode, matchStart, matchLen, secretId) {
   const parent = textNode.parentElement;
@@ -38,7 +29,7 @@ function injectTextBlur(textNode, matchStart, matchLen, secretId) {
   try {
     range.surroundContents(span);
   } catch {
-    return;
+    return; // range spans element boundaries
   }
 
   if (!spansForSecret.has(secretId)) spansForSecret.set(secretId, new Set());
@@ -57,8 +48,6 @@ function removeTextBlursForSecret(secretId) {
 function clearAllTextBlurs() {
   for (const id of spansForSecret.keys()) removeTextBlursForSecret(id);
 }
-
-// ─── Pool overlays (inputs / textareas) ───────────────────────────────────
 
 const POOL_SIZE = 20;
 const pool = [];

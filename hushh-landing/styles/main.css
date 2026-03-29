@@ -1,4 +1,3 @@
-/* main.css — Hushh landing page styles */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
 *, *::before, *::after {
@@ -37,7 +36,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ─── Typography ──────────────────────────────────────────────────────────── */
 h1, h2, h3, h4 {
   line-height: 1.15;
   letter-spacing: -0.025em;
@@ -57,7 +55,6 @@ code, .mono {
   font-size: 0.875em;
 }
 
-/* ─── Layout ──────────────────────────────────────────────────────────────── */
 .container {
   max-width: 1100px;
   margin: 0 auto;
@@ -68,7 +65,6 @@ section {
   padding: 80px 0;
 }
 
-/* ─── Nav ─────────────────────────────────────────────────────────────────── */
 .nav {
   position: sticky;
   top: 0;
@@ -138,7 +134,6 @@ section {
 
 .nav-cta:hover { opacity: 0.85; text-decoration: none !important; }
 
-/* ─── Buttons ─────────────────────────────────────────────────────────────── */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -180,7 +175,6 @@ section {
 
 .btn-secondary:hover { gap: 10px; text-decoration: none; }
 
-/* ─── Badges / stickers ───────────────────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -201,7 +195,6 @@ section {
   margin-top: 12px;
 }
 
-/* ─── Section 1: Hero ─────────────────────────────────────────────────────── */
 .hero {
   padding: 80px 0 60px;
   overflow: hidden;
@@ -258,7 +251,6 @@ section {
   position: relative;
 }
 
-/* Browser mockup */
 .browser-mock {
   background: #fff;
   border: 2px solid var(--border);
@@ -308,7 +300,6 @@ section {
   position: relative;
 }
 
-/* Demo content inside browser mockup */
 .demo-page {
   display: flex;
   flex-direction: column;
@@ -389,7 +380,6 @@ section {
   border-radius: 0;
 }
 
-/* ─── Section 2: Problem ──────────────────────────────────────────────────── */
 .problem {
   background: var(--surface);
 }
@@ -451,25 +441,6 @@ section {
   min-height: 180px;
 }
 
-.chat-message {
-  background: #2a2a40;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 13px;
-  color: #ccc;
-  margin-bottom: 10px;
-  line-height: 1.5;
-}
-
-.chat-message .exposed {
-  color: #F4896B;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500;
-  background: rgba(244, 137, 107, 0.15);
-  border-radius: 4px;
-  padding: 1px 4px;
-}
-
 .problem-copy h2 { margin-bottom: 16px; }
 .problem-copy p  { margin-bottom: 14px; font-size: 1rem; }
 
@@ -486,7 +457,6 @@ section {
   letter-spacing: 0.06em;
 }
 
-/* ─── Section 3: How it works ─────────────────────────────────────────────── */
 .how-inner {
   text-align: center;
 }
@@ -510,7 +480,6 @@ section {
   padding: 28px 24px;
   text-align: left;
   position: relative;
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .step-card:hover {
@@ -541,7 +510,6 @@ section {
   font-size: 0.9rem;
 }
 
-/* Mini mockup inside step cards */
 .step-mini-mock {
   margin-top: 18px;
   background: white;
@@ -592,7 +560,6 @@ section {
   padding: 0 2px;
 }
 
-/* ─── Section 4: Features ─────────────────────────────────────────────────── */
 .features {
   background: var(--surface);
 }
@@ -628,7 +595,6 @@ section {
   flex-shrink: 0;
 }
 
-
 .feature-text h4 {
   font-size: 0.95rem;
   font-weight: 600;
@@ -645,7 +611,6 @@ section {
   position: relative;
 }
 
-/* Compat logos */
 .compat-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -669,8 +634,6 @@ section {
   box-shadow: 0 2px 12px rgba(127, 119, 221, 0.15);
 }
 
-
-/* ─── QuickBooks mock ─────────────────────────────────────────────────────── */
 .recording-body { min-height: 0; }
 
 .qb-mock {
@@ -850,7 +813,6 @@ section {
   user-select: none;
 }
 
-/* Transactions screen */
 .qb-txn-list {
   background: white;
   border: 1px solid #e0e0e8;
@@ -900,7 +862,6 @@ section {
   padding: 0 2px;
 }
 
-
 .hushh-followed {
   margin-top: 9px;
   font-size: 11px;
@@ -916,7 +877,6 @@ section {
   opacity: 1;
   transform: translateY(0);
 }
-
 
 .qb-cursor {
   position: absolute;
@@ -934,7 +894,6 @@ section {
 .qb-cursor.visible { opacity: 1; }
 .qb-cursor.click   { background: rgba(127,119,221,0.25); transform: translate(-50%,-50%) scale(0.75); }
 
-
 .qb-tip {
   position: absolute;
   background: rgba(26, 26, 46, 0.92);
@@ -951,104 +910,6 @@ section {
 
 .qb-tip.visible { opacity: 1; }
 
-/* ─── Problem section animation ──────────────────────────────────────────── */
-.prob-anim {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 140px;
-}
-
-.prob-msg {
-  background: #2a2a40;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 12px;
-  color: #ccc;
-  line-height: 1.5;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.prob-msg.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.prob-msg-you {
-  margin-left: 16px;
-  background: #3a3a55;
-}
-
-.prob-name {
-  display: block;
-  font-size: 10px;
-  color: #888;
-  margin-bottom: 4px;
-}
-
-.prob-secret {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  color: #ccc;
-  transition: color 0.3s, background 0.3s;
-  border-radius: 3px;
-  padding: 0 3px;
-}
-
-.prob-secret.exposed {
-  color: #F4896B;
-  background: rgba(244, 137, 107, 0.15);
-}
-
-.prob-typing {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 14px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.prob-typing.visible { opacity: 1; }
-
-.prob-typing span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #666;
-  animation: typingBounce 1s infinite;
-}
-
-.prob-typing span:nth-child(2) { animation-delay: 0.15s; }
-.prob-typing span:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes typingBounce {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-4px); }
-}
-
-.prob-warning {
-  background: rgba(244, 137, 107, 0.15);
-  border: 1px solid rgba(244, 137, 107, 0.4);
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 11px;
-  color: #F4896B;
-  font-weight: 500;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.prob-warning.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ─── No data callout ─────────────────────────────────────────────────────── */
 .no-data-callout {
   display: flex;
   align-items: flex-start;
@@ -1083,13 +944,11 @@ section {
   line-height: 1.6;
 }
 
-/* ─── Feature icon SVG color ──────────────────────────────────────────────── */
 .feature-icon.purple { background: var(--purple-light); color: var(--purple); }
 .feature-icon.peach  { background: rgba(245, 196, 179, 0.3); color: #c0643a; }
 .feature-icon.teal   { background: rgba(159, 225, 203, 0.3); color: #2a7a5e; }
 .feature-icon.coral  { background: rgba(244, 137, 107, 0.15); color: var(--coral); }
 
-/* ─── Section 5: Footer CTA ───────────────────────────────────────────────── */
 .footer-cta {
   background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
   padding: 80px 0;
@@ -1127,7 +986,6 @@ section {
   font-style: italic;
 }
 
-/* ─── Footer ──────────────────────────────────────────────────────────────── */
 .site-footer {
   padding: 24px 0;
   border-top: 1px solid var(--border);
@@ -1159,7 +1017,6 @@ section {
   font-size: 13px;
 }
 
-/* ─── Privacy page ────────────────────────────────────────────────────────── */
 .privacy-section {
   margin-bottom: 40px;
 }
@@ -1191,7 +1048,6 @@ section {
   line-height: 1.6;
 }
 
-/* ─── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   section { padding: 56px 0; }
 
@@ -1205,10 +1061,6 @@ section {
   }
 
   .steps {
-    grid-template-columns: 1fr;
-  }
-
-  .quote-grid {
     grid-template-columns: 1fr;
   }
 

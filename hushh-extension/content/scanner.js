@@ -1,62 +1,51 @@
-// scanner.js — Text scanning logic
-
 import { getSecrets } from './extractor.js';
 import { injectTextBlur, showElementOverlay } from './overlay.js';
 
-/**
- * Scan a single text node against all registered secrets.
- */
+const HUSHH_ATTRS = ['data-hushh-blur', 'data-hushh-overlay', 'data-hushh-ui'];
+const SKIP_TAGS   = new Set(['SCRIPT', 'STYLE']);
+
+function isHushhNode(parent) {
+  return HUSHH_ATTRS.some(a => parent.hasAttribute(a)) || SKIP_TAGS.has(parent.tagName);
+}
+
 function scanTextNode(node) {
   const parent = node.parentElement;
-  if (!parent) return;
-  if (parent.hasAttribute('data-hushh-blur'))    return; // already wrapped
-  if (parent.hasAttribute('data-hushh-overlay')) return;
-  if (parent.hasAttribute('data-hushh-ui'))      return;
-  if (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE') return;
+  if (!parent || isHushhNode(parent)) return;
 
-  const text = node.textContent;
+  const text  = node.textContent;
   if (!text?.trim()) return;
 
   const lower = text.toLowerCase();
-  // Collect matches in reverse order so char offsets don't shift as we inject spans
   const matches = [];
+
   for (const secret of getSecrets()) {
     let from = 0;
     while (true) {
       const idx = lower.indexOf(secret.matchValue, from);
       if (idx === -1) break;
-      matches.push({ idx, len: secret.matchValue.length, secretId: secret.id, style: secret.style ?? 'blur' });
+      matches.push({ idx, len: secret.matchValue.length, secretId: secret.id });
       from = idx + secret.matchValue.length;
     }
   }
 
-  // Inject from end to start so offsets stay valid
+  // Inject right-to-left so earlier char offsets stay valid after each DOM insertion
   matches.sort((a, b) => b.idx - a.idx);
-  for (const { idx, len, secretId, style } of matches) {
-    injectTextBlur(node, idx, len, secretId, style);
+  for (const { idx, len, secretId } of matches) {
+    injectTextBlur(node, idx, len, secretId);
   }
 }
 
-/**
- * Scan an input or textarea — blurs the whole element.
- */
 function scanInputEl(el) {
-  if (el.hasAttribute('data-hushh-overlay')) return;
-  if (el.hasAttribute('data-hushh-ui'))      return;
+  if (HUSHH_ATTRS.some(a => el.hasAttribute(a))) return;
 
   const text = ((el.value ?? '') + ' ' + (el.placeholder ?? '')).toLowerCase();
   if (!text.trim()) return;
 
   for (const secret of getSecrets()) {
-    if (text.includes(secret.matchValue)) {
-      showElementOverlay(secret.id, el);
-    }
+    if (text.includes(secret.matchValue)) showElementOverlay(secret.id, el);
   }
 }
 
-/**
- * Scan a dirty node from the rAF batcher.
- */
 function scanNode(node) {
   if (node.nodeType === Node.TEXT_NODE) {
     scanTextNode(node);
@@ -79,9 +68,6 @@ function scanDirtyNodes(dirtyNodes) {
   dirtyNodes.clear();
 }
 
-/**
- * Full document scan — called once when a new secret is registered.
- */
 function scanFullDocument() {
   if (getSecrets().length === 0) return;
 
@@ -91,11 +77,7 @@ function scanFullDocument() {
     {
       acceptNode(node) {
         const p = node.parentElement;
-        if (!p) return NodeFilter.FILTER_REJECT;
-        if (p.hasAttribute('data-hushh-blur'))    return NodeFilter.FILTER_REJECT;
-        if (p.hasAttribute('data-hushh-overlay')) return NodeFilter.FILTER_REJECT;
-        if (p.hasAttribute('data-hushh-ui'))      return NodeFilter.FILTER_REJECT;
-        if (p.tagName === 'SCRIPT' || p.tagName === 'STYLE') return NodeFilter.FILTER_REJECT;
+        if (!p || isHushhNode(p)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       },
     }
