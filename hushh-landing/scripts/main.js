@@ -182,7 +182,7 @@ const recTime = document.getElementById('recTime');
 if (recTime) {
   let seconds = 0;
   setInterval(() => {
-    seconds++;
+    seconds = (seconds + 1) % 600;
     const m = String(Math.floor(seconds / 60)).padStart(2, '0');
     const s = String(seconds % 60).padStart(2, '0');
     recTime.textContent = `${m}:${s}`;

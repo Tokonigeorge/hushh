@@ -22,7 +22,12 @@ function normalize(raw) {
 }
 
 function addSecret(el, isRegion = false) {
-  return addRawSecret(extractValue(el), detectType(el, isRegion));
+  const id = addRawSecret(extractValue(el), detectType(el, isRegion));
+  if (id) {
+    const secret = registry.get(id);
+    if (secret && !secret.sourceEl) secret.sourceEl = el;
+  }
+  return id;
 }
 
 function addRawSecret(raw, type = 'text') {

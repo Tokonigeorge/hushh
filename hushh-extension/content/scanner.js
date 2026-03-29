@@ -62,10 +62,19 @@ function scanNode(node) {
   }
 }
 
+function overlaySourceElements() {
+  for (const secret of getSecrets()) {
+    if (secret.sourceEl && document.documentElement.contains(secret.sourceEl)) {
+      showElementOverlay(secret.id, secret.sourceEl);
+    }
+  }
+}
+
 function scanDirtyNodes(dirtyNodes) {
   if (getSecrets().length === 0) { dirtyNodes.clear(); return; }
   for (const node of dirtyNodes) scanNode(node);
   dirtyNodes.clear();
+  overlaySourceElements();
 }
 
 function scanFullDocument() {
@@ -86,6 +95,7 @@ function scanFullDocument() {
   let node;
   while ((node = walker.nextNode())) scanTextNode(node);
   for (const el of document.body.querySelectorAll('input, textarea')) scanInputEl(el);
+  overlaySourceElements();
 }
 
 export { scanNode, scanDirtyNodes, scanFullDocument };
