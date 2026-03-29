@@ -139,23 +139,57 @@ function ensureTooltip() {
 // ─── Click to lock ─────────────────────────────────────────────────────────
 
 function onClick(e) {
-  if (isDragging) return; // drag supersedes click
+  if (isDragging) return;
   if (isHushhElement(e.target)) return;
 
   e.preventDefault();
   e.stopPropagation();
 
-  const target = findMeaningfulElement(e.target) ?? e.target;
-  const id = addSecret(target);
+  // Try to find the exact text node under the cursor first.
+  // This lets clicks in the padding area of a paragraph still target the
+  // right text, and gives a single-node value the scanner can always match.
+  const textNode = getTextNodeAtPoint(e.clientX, e.clientY);
+  let id = null;
+
+  if (textNode) {
+    const raw = textNode.textContent?.trim() ?? '';
+    if (raw.length >= 3) {
+      id = addRawSecret(raw, 'text');
+    }
+  }
+
+  // Fallback: use the hovered element's full value
+  if (!id) {
+    const target = findMeaningfulElement(e.target) ?? e.target;
+    id = addSecret(target);
+    if (id && hoveredEl) flashConfirm(hoveredEl);
+  }
 
   if (id) {
-    flashConfirm(target);
     startObserver();
     scanFullDocument();
     onSecretAdded?.(id);
   }
 
   exitSelectionMode();
+}
+
+/**
+ * Return the text node directly under the cursor using the caret API.
+ * Works in the padding/margin area of block elements too.
+ */
+function getTextNodeAtPoint(x, y) {
+  // Standard API (Chrome 128+, Firefox)
+  if (document.caretPositionFromPoint) {
+    const pos = document.caretPositionFromPoint(x, y);
+    if (pos?.offsetNode?.nodeType === Node.TEXT_NODE) return pos.offsetNode;
+  }
+  // Fallback for older Chrome / Edge
+  if (document.caretRangeFromPoint) {
+    const range = document.caretRangeFromPoint(x, y);
+    if (range?.startContainer?.nodeType === Node.TEXT_NODE) return range.startContainer;
+  }
+  return null;
 }
 
 function flashConfirm(el) {
@@ -180,8 +214,9 @@ function onMouseDown(e) {
     return;
   }
 
-  // If hovering a meaningful text element, let click handle it
-  if (target && extractValue(target).trim().length > 0) return;
+  // Shift+drag forces draw mode even over text elements
+  const forceDrawMode = e.shiftKey;
+  if (!forceDrawMode && target && extractValue(target).trim().length > 0) return;
 
   isDragging = false;
   dragStartX = e.clientX;
@@ -305,7 +340,7 @@ function showBanner() {
     pointer-events: none;
   `;
   const mod = isMac() ? 'Option' : 'Alt';
-  banner.textContent = `Hushh active — click or draw to protect  ·  Esc to cancel  ·  ${mod}+Shift+X to clear all`;
+  banner.textContent = `Hushh active — click to protect  ·  Shift+drag to draw region  ·  Esc to cancel  ·  ${mod}+Shift+X to clear all`;
   document.documentElement.appendChild(banner);
 }
 
