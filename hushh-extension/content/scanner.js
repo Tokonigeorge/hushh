@@ -19,12 +19,20 @@ function scanTextNode(node) {
   const matches = [];
 
   for (const secret of getSecrets()) {
+    let found = false;
     let from = 0;
     while (true) {
       const idx = lower.indexOf(secret.matchValue, from);
       if (idx === -1) break;
+      found = true;
       matches.push({ idx, len: secret.matchValue.length, secretId: secret.id });
       from = idx + secret.matchValue.length;
+    }
+    if (!found) {
+      const trimmed = lower.trim();
+      if (trimmed.length >= 8 && secret.normalized.includes(trimmed)) {
+        matches.push({ idx: 0, len: text.length, secretId: secret.id });
+      }
     }
   }
 
