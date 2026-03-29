@@ -1,5 +1,4 @@
-// Secrets are NEVER written to localStorage, sessionStorage, or chrome.storage.
-// The registry lives only in memory for the current page session.
+
 
 const registry = new Map();
 let idCounter = 0;

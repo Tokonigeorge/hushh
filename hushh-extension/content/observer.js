@@ -36,7 +36,7 @@ function startObserver() {
     attributeFilter: ['value', 'placeholder', 'title', 'aria-label'],
   });
 
-  // capture:true catches scroll events from custom scroll containers (e.g. SPAs like Claude.ai)
+  // capture:true catches scroll events from custom scroll containers 
   document.addEventListener('scroll', repositionOverlays, { passive: true, capture: true });
   window.addEventListener('resize', repositionOverlays, { passive: true });
 }
