@@ -24,14 +24,29 @@ function getMatchText(node) {
 }
 
 /**
- * For a text node, the overlay target is its parent element.
- * For an input/textarea, it's the element itself.
+ * For a text node, walk up from the immediate parent until we find an element
+ * with real rendered dimensions that isn't too large (not a full-page container).
+ * For an input/textarea, use the element itself.
  */
 function getOverlayTarget(node) {
-  if (node.nodeType === Node.TEXT_NODE) {
-    return node.parentElement ?? null;
+  const start = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+  if (!start) return null;
+
+  const viewW = window.innerWidth;
+  const viewH = window.innerHeight;
+
+  let current = start;
+  while (current && current !== document.body && current !== document.documentElement) {
+    const rect = current.getBoundingClientRect();
+    const hasSize = rect.width > 0 && rect.height > 0;
+    // Stop if we've found a reasonably-sized element that doesn't span the whole viewport
+    const notFullPage = rect.width < viewW * 0.95 || rect.height < viewH * 0.8;
+    if (hasSize && notFullPage) return current;
+    current = current.parentElement;
   }
-  return node;
+
+  // Fall back to start even if dimensions are odd
+  return start;
 }
 
 /**

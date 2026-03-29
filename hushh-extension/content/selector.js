@@ -168,10 +168,20 @@ function flashConfirm(el) {
 // ─── Draw to region ────────────────────────────────────────────────────────
 
 function onMouseDown(e) {
-  // Only start a draw if clicking on a blank/non-meaningful area
-  const target = findMeaningfulElement(e.target);
-  if (target && extractValue(target).trim().length > 0) return; // let click handle it
   if (isHushhElement(e.target)) return;
+
+  const target = findMeaningfulElement(e.target);
+
+  // Prevent inputs/textareas from getting focused — mousedown fires before click,
+  // so without this the field gets focused and the cursor appears before we can
+  // intercept the selection.
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+    e.preventDefault();
+    return;
+  }
+
+  // If hovering a meaningful text element, let click handle it
+  if (target && extractValue(target).trim().length > 0) return;
 
   isDragging = false;
   dragStartX = e.clientX;
