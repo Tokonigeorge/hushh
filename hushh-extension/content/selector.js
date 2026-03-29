@@ -13,8 +13,7 @@ let banner      = null;
 let tooltip     = null;
 let dragOverlay = null;
 
-const HUSHH_OUTLINE       = '2px dashed rgba(127, 119, 221, 0.7)';
-const HUSHH_OUTLINE_SAVED = '2px solid rgba(127, 119, 221, 0.9)';
+const HUSHH_OUTLINE = '2px dashed rgba(127, 119, 221, 0.7)';
 
 let onSecretAdded  = null;
 let onSelectionEnd = null;
@@ -142,6 +141,8 @@ function onClick(e) {
   e.preventDefault();
   e.stopPropagation();
 
+  exitSelectionMode();
+
   const textNode = getTextNodeAtPoint(e.clientX, e.clientY);
   let id = null;
 
@@ -153,7 +154,6 @@ function onClick(e) {
   if (!id) {
     const target = findMeaningfulElement(e.target) ?? e.target;
     id = addSecret(target, false);
-    if (id && hoveredEl) flashConfirm(hoveredEl);
   }
 
   if (id) {
@@ -161,8 +161,6 @@ function onClick(e) {
     scanFullDocument();
     onSecretAdded?.(id);
   }
-
-  exitSelectionMode();
 }
 
 // caretPositionFromPoint: Chrome 128+, Firefox. caretRangeFromPoint: older Chrome/Edge
@@ -176,11 +174,6 @@ function getTextNodeAtPoint(x, y) {
     if (range?.startContainer?.nodeType === Node.TEXT_NODE) return range.startContainer;
   }
   return null;
-}
-
-function flashConfirm(el) {
-  el.style.outline = HUSHH_OUTLINE_SAVED;
-  setTimeout(() => { el.style.outline = el._hushhPrevOutline ?? ''; }, 800);
 }
 
 function onMouseDown(e) {

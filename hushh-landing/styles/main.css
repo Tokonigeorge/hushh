@@ -580,7 +580,7 @@ section {
 
 .feature-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 14px;
 }
 
@@ -822,7 +822,7 @@ section {
 
 .qb-txn-header {
   display: grid;
-  grid-template-columns: 40px 1fr 55px 72px;
+  grid-template-columns: 40px 1fr 72px 78px;
   padding: 6px 10px;
   background: #f8f9fa;
   border-bottom: 1px solid #eee;
@@ -835,7 +835,7 @@ section {
 
 .qb-txn-row {
   display: grid;
-  grid-template-columns: 40px 1fr 55px 72px;
+  grid-template-columns: 40px 1fr 72px 78px;
   padding: 7px 10px;
   font-size: 10.5px;
   color: #1c1c2e;

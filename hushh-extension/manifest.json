@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Hushh",
   "version": "1.0.0",
-  "description": "Protect sensitive info during screen recordings. Point at a secret — Hushh hides it everywhere.",
+  "description": "Protect sensitive info during screen recordings. Point at a secret, Hushh hides it everywhere.",
   "permissions": ["activeTab", "scripting", "storage"],
   "action": {
     "default_popup": "popup/popup.html",
@@ -26,7 +26,8 @@
   "icons": {
     "16": "assets/icons/16.png",
     "32": "assets/icons/32.png",
-    "48": "assets/icons/48.png"
+    "48": "assets/icons/48.png",
+    "128": "assets/icons/128.png"
   },
   "commands": {
     "toggle-hushh": {
