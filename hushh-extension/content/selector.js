@@ -13,7 +13,8 @@ let banner      = null;
 let tooltip     = null;
 let dragOverlay = null;
 
-const HUSHH_OUTLINE = '2px dashed rgba(127, 119, 221, 0.7)';
+const HUSHH_HOVER_CLASS = 'hushh-hover-outline';
+let hoverStyle = null;
 
 let onSecretAdded  = null;
 let onSelectionEnd = null;
@@ -60,7 +61,7 @@ function exitSelectionMode() {
 
   document.body.style.cursor = '';
   hideBanner();
-  clearHover();
+  clearAllHovers();
   hideTooltip();
   cleanupDrag();
 
@@ -73,14 +74,22 @@ function exitSelectionMode() {
   onSelectionEnd?.();
 }
 
+function ensureHoverStyle() {
+  if (hoverStyle) return;
+  hoverStyle = document.createElement('style');
+  hoverStyle.setAttribute('data-hushh-ui', '');
+  hoverStyle.textContent = `.${HUSHH_HOVER_CLASS} { outline: 2px dashed rgba(127, 119, 221, 0.7) !important; }`;
+  document.documentElement.appendChild(hoverStyle);
+}
+
 function onMouseOver(e) {
   const target = findMeaningfulElement(e.target);
   if (!target || isHushhElement(target)) return;
 
   if (hoveredEl && hoveredEl !== target) clearHover();
   hoveredEl = target;
-  hoveredEl._hushhPrevOutline = hoveredEl.style.outline;
-  hoveredEl.style.outline = HUSHH_OUTLINE;
+  ensureHoverStyle();
+  hoveredEl.classList.add(HUSHH_HOVER_CLASS);
 
   showTooltip(target, e.clientX, e.clientY);
 }
@@ -95,8 +104,12 @@ function onMouseOut(e) {
 
 function clearHover() {
   if (!hoveredEl) return;
-  hoveredEl.style.outline = hoveredEl._hushhPrevOutline ?? '';
-  hoveredEl._hushhPrevOutline = undefined;
+  hoveredEl.classList.remove(HUSHH_HOVER_CLASS);
+  hoveredEl = null;
+}
+
+function clearAllHovers() {
+  document.querySelectorAll(`.${HUSHH_HOVER_CLASS}`).forEach(el => el.classList.remove(HUSHH_HOVER_CLASS));
   hoveredEl = null;
 }
 
@@ -140,8 +153,6 @@ function onClick(e) {
 
   e.preventDefault();
   e.stopPropagation();
-
-  exitSelectionMode();
 
   const textNode = getTextNodeAtPoint(e.clientX, e.clientY);
   let id = null;
@@ -277,7 +288,7 @@ function rectsIntersect(a, b) {
 }
 
 function showBanner() {
-  if (banner) { banner.style.display = 'block'; return; }
+  if (banner) { banner.style.display = 'flex'; return; }
   banner = document.createElement('div');
   banner.setAttribute('data-hushh-ui', '');
   banner.style.cssText = `
@@ -289,15 +300,41 @@ function showBanner() {
     font: 13px/1 -apple-system, system-ui, sans-serif;
     letter-spacing: 0.01em;
     padding: 8px 16px;
-    text-align: center;
-    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
   `;
-  banner.textContent = 'Hushh active — click or draw to protect  ·  Esc to cancel';
+
+  const label = document.createElement('span');
+  label.style.pointerEvents = 'none';
+  label.textContent = 'Hushh active: click anything to protect it';
+
+  const doneBtn = document.createElement('button');
+  doneBtn.setAttribute('data-hushh-ui', '');
+  doneBtn.textContent = 'Done';
+  doneBtn.style.cssText = `
+    background: #fff;
+    color: rgba(127, 119, 221, 1);
+    border: none;
+    border-radius: 4px;
+    padding: 4px 14px;
+    font: 600 12px/1 -apple-system, system-ui, sans-serif;
+    cursor: pointer;
+    pointer-events: auto;
+  `;
+  doneBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    exitSelectionMode();
+  });
+
+  banner.append(label, doneBtn);
   document.documentElement.appendChild(banner);
 }
 
 function hideBanner() {
   if (banner) banner.style.display = 'none';
+  document.body.style.cursor = '';
 }
 
 function onKeyDown(e) {

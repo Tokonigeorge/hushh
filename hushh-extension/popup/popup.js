@@ -13,6 +13,15 @@ const mod = isMac ? '⌥' : 'Alt';
 
 let currentTabId = null;
 
+async function ensureContentScript() {
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: currentTabId },
+      files: ['dist/content/index.js'],
+    });
+  } catch {}
+}
+
 async function init() {
   shortcutHint.innerHTML =
     `<kbd>${mod}</kbd><kbd>⇧</kbd><kbd>H</kbd> protect &nbsp;·&nbsp; <kbd>${mod}</kbd><kbd>⇧</kbd><kbd>X</kbd> clear`;
@@ -21,20 +30,32 @@ async function init() {
   if (!tab?.id) { showState('needs-reload'); return; }
   currentTabId = tab.id;
 
+  const restricted = tab.url?.startsWith('chrome://') ||
+                     tab.url?.startsWith('chrome-extension://') ||
+                     tab.url?.startsWith('https://chrome.google.com/webstore');
+  if (restricted) { showState('inactive'); return; }
+
+  await ensureContentScript();
+
   try {
     const res = await sendToContent({ type: 'GET_SECRETS' });
-    renderSecrets(res.secrets ?? []);
+    renderSecrets(res.secrets ?? [], true);
   } catch {
-    const restricted = tab.url?.startsWith('chrome://') ||
-                       tab.url?.startsWith('chrome-extension://') ||
-                       tab.url?.startsWith('https://chrome.google.com/webstore');
-    showState(restricted ? 'inactive' : 'needs-reload');
+    showState('needs-reload');
   }
 }
 
-function renderSecrets(secrets) {
+function renderSecrets(secrets, autoActivate = false) {
   secretsList.innerHTML = '';
-  if (secrets.length === 0) { showState('empty'); return; }
+  if (secrets.length === 0) {
+    if (autoActivate) {
+      sendToContent({ type: 'TOGGLE_SELECTION' }).catch(() => {});
+      window.close();
+      return;
+    }
+    showState('empty');
+    return;
+  }
 
   showState('list');
   countBadge.textContent = secrets.length;
@@ -84,6 +105,7 @@ function showState(state) {
 btnActivate.addEventListener('click', async () => {
   if (!currentTabId) return;
   try {
+    await ensureContentScript();
     await sendToContent({ type: 'TOGGLE_SELECTION' });
     window.close();
   } catch {

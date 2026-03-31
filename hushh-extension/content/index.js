@@ -3,6 +3,9 @@ import { removeSecret, getSecrets, clearAll } from './extractor.js';
 import { stopObserver } from './observer.js';
 import { removeOverlaysForSecret, clearAllOverlays, initPool } from './overlay.js';
 
+if (!window.__hushhInitialized) {
+window.__hushhInitialized = true;
+
 initPool();
 
 initSelector({
@@ -80,3 +83,4 @@ history.pushState    = (...args) => { _pushState(...args);    handleNavigation()
 history.replaceState = (...args) => { _replaceState(...args); handleNavigation(); };
 
 window.addEventListener('popstate', handleNavigation);
+}

@@ -18,13 +18,13 @@
 
 body {
   width: 360px;
+  max-height: 500px;
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, 'DM Sans', system-ui, sans-serif;
   font-size: 13px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .header {
@@ -111,6 +111,8 @@ body {
   gap: 5px;
   padding: 12px 14px;
   list-style: none;
+  overflow-y: auto;
+  max-height: 340px;
 }
 .secrets-list.visible { display: flex; }
 
