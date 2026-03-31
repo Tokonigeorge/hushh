@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tokonigeorge.github.io/hushh/sitemap.xml
